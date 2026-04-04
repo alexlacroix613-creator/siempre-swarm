@@ -1,0 +1,400 @@
+/**
+ * Siempre Swarm Orchestrator
+ *
+ * The central nervous system. Receives tasks, routes them to the
+ * right department, spawns agents, collects results, and maintains
+ * the executive briefing.
+ *
+ * Flow:
+ *   Task in → classify → route to department → select agent →
+ *   check governance → spawn (via OpenRouter or Claude Code Task) →
+ *   store results in supermemory → report up
+ */
+
+import { DEPARTMENTS, routeToDepartment, getAllAgents, type DepartmentId } from './departments/registry.js';
+import { classifyTask, routeTask, type TaskCategory } from './router/model-router.js';
+import { execute, getStats, formatStats, type BridgeRequest, type BridgeResponse } from './router/openrouter-bridge.js';
+import { SupermemoryClient, DEPARTMENT_TAGS, type SearchOptions } from './memory/supermemory-client.js';
+import { acquireFileLock, releaseAgentLocks, checkBranchIsolation, cleanExpiredLocks } from './governance/session-lock.js';
+import type { AgentTask, ExecutiveBriefing, DepartmentReport } from './departments/types.js';
+
+export interface OrchestratorConfig {
+  openRouterApiKey: string;
+  supermemoryApiKey: string;
+  projectDir: string;
+  verbose?: boolean;
+}
+
+export class Orchestrator {
+  private openRouterKey: string;
+  private memory: SupermemoryClient;
+  private projectDir: string;
+  private verbose: boolean;
+  private activeTasks: Map<string, AgentTask> = new Map();
+  private completedTasks: AgentTask[] = [];
+
+  constructor(config: OrchestratorConfig) {
+    this.openRouterKey = config.openRouterApiKey;
+    this.memory = new SupermemoryClient(config.supermemoryApiKey);
+    this.projectDir = config.projectDir;
+    this.verbose = config.verbose ?? false;
+  }
+
+  /**
+   * Process a task from Alex. This is the main entry point.
+   *
+   * 1. Classify the task
+   * 2. Route to a department
+   * 3. Select the best agent
+   * 4. Check governance (locks, branch isolation)
+   * 5. Execute via OpenRouter (for cheap tasks) or return a prompt
+   *    for Claude Code Task tool (for complex tasks)
+   * 6. Store results in supermemory
+   * 7. Return results
+   */
+  async processTask(prompt: string, options?: {
+    department?: DepartmentId;
+    agentId?: string;
+    category?: TaskCategory;
+    files?: string[];               // Files this task will touch (for locking)
+  }): Promise<TaskResult> {
+    const taskId = `task-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    // Step 1: Classify
+    const category = options?.category || classifyTask(prompt);
+    const route = routeTask(category);
+
+    if (this.verbose) {
+      console.log(`[orchestrator] Task ${taskId}: category=${category}, tier=${route.tier}`);
+    }
+
+    // Step 2: Route to department
+    const deptId = options?.department || routeToDepartment(prompt);
+    if (!deptId) {
+      return {
+        taskId,
+        status: 'completed',
+        content: `No department matched for this task. Route manually or rephrase.`,
+        metadata: { category, tier: route.tier },
+      };
+    }
+
+    const dept = DEPARTMENTS[deptId];
+    if (this.verbose) {
+      console.log(`[orchestrator] Routed to: ${dept.name}`);
+    }
+
+    // Step 3: Select agent
+    const agent = options?.agentId
+      ? [...dept.agents, dept.director].find(a => a.id === options.agentId)
+      : selectBestAgent(dept, prompt);
+
+    if (!agent) {
+      return {
+        taskId,
+        status: 'failed',
+        content: `No suitable agent found in ${dept.name}.`,
+        metadata: { category, tier: route.tier, department: deptId },
+      };
+    }
+
+    if (this.verbose) {
+      console.log(`[orchestrator] Agent: ${agent.name} (${agent.id}), tier=${agent.modelTier}`);
+    }
+
+    // Step 4: Governance checks
+    if (options?.files) {
+      const lockResult = acquireFileLock(this.projectDir, agent.id, deptId, options.files);
+      if (!lockResult.acquired) {
+        return {
+          taskId,
+          status: 'blocked',
+          content: `Governance block: ${lockResult.conflict?.reason}`,
+          metadata: { category, tier: route.tier, department: deptId, agent: agent.id },
+        };
+      }
+    }
+
+    // Step 5: Record active task
+    const agentTask: AgentTask = {
+      id: taskId,
+      department: deptId,
+      assignedAgent: agent.id,
+      prompt,
+      status: 'in_progress',
+      createdAt: new Date().toISOString(),
+    };
+    this.activeTasks.set(taskId, agentTask);
+
+    // Step 6: Execute
+    // For free/budget tier tasks, use OpenRouter directly.
+    // For mid/top tier, return a structured prompt for Claude Code's
+    // Task tool — those need Opus/Sonnet-level reasoning.
+    if (route.tier === 'free' || route.tier === 'budget') {
+      try {
+        const response = await this.executeViaOpenRouter(agent, prompt, category);
+
+        // Store result in supermemory
+        await this.storeResult(agent.containerTag, taskId, prompt, response.content);
+
+        // Update task
+        agentTask.status = 'completed';
+        agentTask.result = response.content;
+        agentTask.modelUsed = response.model;
+        agentTask.cost = response.cost;
+        agentTask.completedAt = new Date().toISOString();
+        this.activeTasks.delete(taskId);
+        this.completedTasks.push(agentTask);
+
+        // Release locks
+        releaseAgentLocks(this.projectDir, agent.id);
+
+        return {
+          taskId,
+          status: 'completed',
+          content: response.content,
+          metadata: {
+            category,
+            tier: route.tier,
+            department: deptId,
+            agent: agent.id,
+            model: response.model,
+            cost: response.cost,
+            latencyMs: response.latencyMs,
+            inputTokens: response.inputTokens,
+            outputTokens: response.outputTokens,
+          },
+        };
+      } catch (error) {
+        agentTask.status = 'failed';
+        this.activeTasks.delete(taskId);
+        releaseAgentLocks(this.projectDir, agent.id);
+
+        return {
+          taskId,
+          status: 'failed',
+          content: `OpenRouter execution failed: ${error instanceof Error ? error.message : String(error)}`,
+          metadata: { category, tier: route.tier, department: deptId, agent: agent.id },
+        };
+      }
+    } else {
+      // Mid/Top tier — return a structured prompt for Claude Code Task tool.
+      // The orchestrator doesn't execute these directly — it hands them back
+      // to Claude Code (me) with full context for Task tool spawning.
+      const taskPrompt = this.buildTaskToolPrompt(agent, prompt, deptId);
+
+      return {
+        taskId,
+        status: 'requires_task_tool',
+        content: taskPrompt,
+        metadata: {
+          category,
+          tier: route.tier,
+          department: deptId,
+          agent: agent.id,
+          suggestedModel: route.model.id,
+        },
+      };
+    }
+  }
+
+  /**
+   * Execute a task via OpenRouter using a free/cheap model.
+   */
+  private async executeViaOpenRouter(
+    agent: { systemPrompt: string; modelTier: string },
+    prompt: string,
+    category: TaskCategory
+  ): Promise<BridgeResponse> {
+    return execute(this.openRouterKey, {
+      prompt,
+      systemPrompt: agent.systemPrompt,
+      category,
+    });
+  }
+
+  /**
+   * Build a structured prompt for Claude Code's Task tool.
+   * This is for complex tasks that need Opus/Sonnet.
+   */
+  private buildTaskToolPrompt(
+    agent: { id: string; name: string; systemPrompt: string; department: string },
+    prompt: string,
+    deptId: DepartmentId
+  ): string {
+    return [
+      `## Agent: ${agent.name} (${agent.id})`,
+      `## Department: ${DEPARTMENTS[deptId].name}`,
+      ``,
+      `### System Context`,
+      agent.systemPrompt,
+      ``,
+      `### Task`,
+      prompt,
+      ``,
+      `### Instructions`,
+      `- Store findings in supermemory containerTag: ${(agent as any).containerTag || `dept_${deptId}`}`,
+      `- Report back with a structured summary`,
+      `- If you need information from other departments, note what you need — don't cross-search yourself`,
+    ].join('\n');
+  }
+
+  /**
+   * Store a task result in supermemory for persistence.
+   */
+  private async storeResult(
+    containerTag: string,
+    taskId: string,
+    prompt: string,
+    result: string
+  ): Promise<void> {
+    try {
+      await this.memory.addMemory({
+        content: `Task: ${prompt}\n\nResult: ${result}`,
+        containerTag,
+        metadata: {
+          taskId,
+          type: 'task_result',
+          timestamp: new Date().toISOString(),
+        },
+        customId: taskId,
+      });
+    } catch (error) {
+      // Don't fail the task if memory storage fails
+      if (this.verbose) {
+        console.error(`[orchestrator] Failed to store result in supermemory:`, error);
+      }
+    }
+  }
+
+  /**
+   * Search across department memories for cross-cutting insights.
+   */
+  async searchMemory(query: string, departments?: DepartmentId[]): Promise<any[]> {
+    const tags = departments
+      ? departments.map(d => DEPARTMENTS[d].containerTag)
+      : Object.values(DEPARTMENT_TAGS);
+
+    return this.memory.search({
+      query,
+      containerTags: tags,
+      searchMode: 'hybrid',
+      limit: 10,
+      rerank: true,
+    });
+  }
+
+  /**
+   * Get the executive briefing — the master document.
+   * Aggregates reports from all departments.
+   */
+  async getExecutiveBriefing(): Promise<ExecutiveBriefing> {
+    const departments: DepartmentReport[] = [];
+    const now = new Date().toISOString();
+
+    for (const [id, dept] of Object.entries(DEPARTMENTS)) {
+      const deptTasks = this.completedTasks.filter(t => t.department === id);
+      const pendingTasks = [...this.activeTasks.values()].filter(t => t.department === id);
+
+      // Try to get department profile from supermemory
+      let summary = `${dept.name}: ${deptTasks.length} completed, ${pendingTasks.length} pending`;
+      try {
+        const profile = await this.memory.getProfile(dept.containerTag, 'current status and recent activity');
+        if (profile.dynamic.length > 0) {
+          summary = profile.dynamic.join('. ');
+        }
+      } catch {
+        // Profile not available yet — use basic stats
+      }
+
+      departments.push({
+        department: id as DepartmentId,
+        summary,
+        completedTasks: deptTasks.length,
+        pendingTasks: pendingTasks.length,
+        totalCost: deptTasks.reduce((sum, t) => sum + (t.cost || 0), 0),
+        updatedAt: now,
+      });
+    }
+
+    // Identify alerts and pending decisions
+    const alerts: string[] = [];
+    const decisions: string[] = [];
+
+    for (const task of this.activeTasks.values()) {
+      if (task.status === 'in_progress') {
+        const elapsed = Date.now() - new Date(task.createdAt).getTime();
+        if (elapsed > 5 * 60 * 1000) { // 5+ minutes
+          alerts.push(`Task ${task.id} (${task.assignedAgent}) has been running for ${Math.round(elapsed / 60000)}min`);
+        }
+      }
+    }
+
+    const routerStats = getStats();
+
+    return {
+      generatedAt: now,
+      departments,
+      alerts,
+      decisions,
+      totalCostToday: routerStats.totalCost,
+      tokensSavedByRouting: routerStats.savedVsOpus > 0
+        ? Math.round((routerStats.savedVsOpus / (routerStats.totalCost + routerStats.savedVsOpus)) * 100)
+        : 0,
+    };
+  }
+
+  /**
+   * Get routing stats — how much money we're saving.
+   */
+  getRoutingStats(): string {
+    return formatStats();
+  }
+
+  /**
+   * Clean up expired governance locks.
+   */
+  cleanup(): number {
+    return cleanExpiredLocks(this.projectDir);
+  }
+}
+
+// ============================================================================
+// Helper: Select the best agent for a task within a department
+// ============================================================================
+
+function selectBestAgent(dept: typeof DEPARTMENTS[DepartmentId], prompt: string): typeof dept.director | undefined {
+  const lower = prompt.toLowerCase();
+
+  // Check specialist agents first — they have more specific expertise
+  for (const agent of dept.agents) {
+    const matchScore = agent.capabilities.reduce((score, cap) => {
+      const capWords = cap.replace(/_/g, ' ').toLowerCase();
+      return score + (lower.includes(capWords) ? 1 : 0);
+    }, 0);
+
+    // Also check agent description keywords
+    const descWords = agent.description.toLowerCase().split(/\s+/);
+    const descScore = descWords.reduce((score, word) => {
+      return score + (word.length > 4 && lower.includes(word) ? 0.5 : 0);
+    }, 0);
+
+    if (matchScore + descScore > 0) {
+      return agent;
+    }
+  }
+
+  // Default to department director for unmatched tasks
+  return dept.director;
+}
+
+// ============================================================================
+// Types
+// ============================================================================
+
+export interface TaskResult {
+  taskId: string;
+  status: 'completed' | 'failed' | 'blocked' | 'requires_task_tool';
+  content: string;
+  metadata?: Record<string, unknown>;
+}
