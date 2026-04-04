@@ -90,7 +90,9 @@
 - Each department/agent gets isolated memory namespace
 - Shared project-level memories accessible across agents
 - If Mem0's LLM extraction becomes costly, can drop to raw Qdrant
-- Alternatives evaluated: Supermemory (wrong audience), Letta (too opinionated), Zep (cloud-only for good features), ChromaDB (too low-level)
+- Alternatives evaluated: Letta (too opinionated), Zep (cloud-only for good features), ChromaDB (too low-level)
+- **UPDATE**: After deep-diving supermemory docs, REVISED to supermemory as primary. containerTags map to departments/agents, scoped API keys = built-in governance, knowledge graph = relationship detection, auto-forgetting + versioning = solves stale memory. Mem0 demoted to backup option.
+- **Hybrid approach**: Supermemory for persistent cross-session memory, ruflo's hnsw-lite.ts for in-session fast vector search without API calls
 
 ### Model Routing Decision: OpenRouter
 - OpenAI-compatible API (drop-in, change base URL + model string)
