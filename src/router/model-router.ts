@@ -31,12 +31,13 @@ interface ModelConfig {
 // Models ordered by preference within each tier.
 // Free models rotate on OpenRouter — fallbacks handle unavailability.
 const MODEL_REGISTRY: Record<TaskTier, ModelConfig[]> = {
+  // Updated 2026-04-04 from live OpenRouter /models endpoint
   free: [
-    { id: 'google/gemini-2.5-pro-exp-03-25:free', tier: 'free', contextWindow: 1_000_000, costPerMInput: 0, costPerMOutput: 0 },
-    { id: 'deepseek/deepseek-chat-v3-0324:free', tier: 'free', contextWindow: 64_000, costPerMInput: 0, costPerMOutput: 0 },
-    { id: 'meta-llama/llama-3.3-70b-instruct:free', tier: 'free', contextWindow: 128_000, costPerMInput: 0, costPerMOutput: 0 },
-    { id: 'qwen/qwen2.5-coder-32b-instruct:free', tier: 'free', contextWindow: 32_000, costPerMInput: 0, costPerMOutput: 0 },
-    { id: 'mistralai/mistral-small-3.1-24b-instruct:free', tier: 'free', contextWindow: 96_000, costPerMInput: 0, costPerMOutput: 0 },
+    { id: 'qwen/qwen3.6-plus:free', tier: 'free', contextWindow: 1_000_000, costPerMInput: 0, costPerMOutput: 0 },
+    { id: 'nvidia/nemotron-3-super-120b-a12b:free', tier: 'free', contextWindow: 262_144, costPerMInput: 0, costPerMOutput: 0 },
+    { id: 'qwen/qwen3-coder:free', tier: 'free', contextWindow: 262_000, costPerMInput: 0, costPerMOutput: 0 },
+    { id: 'google/gemma-3-27b-it:free', tier: 'free', contextWindow: 131_072, costPerMInput: 0, costPerMOutput: 0 },
+    { id: 'nousresearch/hermes-3-llama-3.1-405b:free', tier: 'free', contextWindow: 131_072, costPerMInput: 0, costPerMOutput: 0 },
   ],
   budget: [
     { id: 'google/gemini-2.0-flash-001', tier: 'budget', contextWindow: 1_000_000, costPerMInput: 0.10, costPerMOutput: 0.40 },
@@ -152,7 +153,7 @@ export function buildOpenRouterRequest(
     temperature: options?.temperature ?? 0.7,
     max_tokens: options?.maxTokens ?? 4096,
     route: 'fallback',
-    models: [route.model.id, ...route.fallbacks.map(f => f.id)],
+    models: [route.model.id, ...route.fallbacks.slice(0, 2).map(f => f.id)],
   };
 }
 

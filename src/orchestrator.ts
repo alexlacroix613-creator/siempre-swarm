@@ -127,10 +127,12 @@ export class Orchestrator {
     this.activeTasks.set(taskId, agentTask);
 
     // Step 6: Execute
-    // For free/budget tier tasks, use OpenRouter directly.
-    // For mid/top tier, return a structured prompt for Claude Code's
-    // Task tool — those need Opus/Sonnet-level reasoning.
-    if (route.tier === 'free' || route.tier === 'budget') {
+    // Use the AGENT's model tier (not the task classifier's tier).
+    // The agent knows what level of intelligence its work requires.
+    // Free/budget agents → OpenRouter. Mid/top agents → Claude Code Task tool.
+    const effectiveTier = (agent as any).modelTier || route.tier;
+
+    if (effectiveTier === 'free' || effectiveTier === 'budget') {
       try {
         const response = await this.executeViaOpenRouter(agent, prompt, category);
 
@@ -365,27 +367,41 @@ export class Orchestrator {
 
 function selectBestAgent(dept: typeof DEPARTMENTS[DepartmentId], prompt: string): typeof dept.director | undefined {
   const lower = prompt.toLowerCase();
+  let bestAgent: typeof dept.director | undefined;
+  let bestScore = 0;
 
-  // Check specialist agents first — they have more specific expertise
   for (const agent of dept.agents) {
-    const matchScore = agent.capabilities.reduce((score, cap) => {
+    let score = 0;
+
+    // Check capabilities
+    for (const cap of agent.capabilities) {
       const capWords = cap.replace(/_/g, ' ').toLowerCase();
-      return score + (lower.includes(capWords) ? 1 : 0);
-    }, 0);
+      if (lower.includes(capWords)) score += 2;
+    }
 
-    // Also check agent description keywords
+    // Check agent name (e.g., "Virginia Pricing Agent" matches "virginia")
+    const nameWords = agent.name.toLowerCase().split(/\s+/);
+    for (const word of nameWords) {
+      if (word.length > 2 && lower.includes(word)) score += 3;
+    }
+
+    // Check agent ID (e.g., "pricing_va" matches "virginia" via the name check above)
+    if (lower.includes(agent.id.replace(/_/g, ' '))) score += 2;
+
+    // Check description keywords
     const descWords = agent.description.toLowerCase().split(/\s+/);
-    const descScore = descWords.reduce((score, word) => {
-      return score + (word.length > 4 && lower.includes(word) ? 0.5 : 0);
-    }, 0);
+    for (const word of descWords) {
+      if (word.length > 4 && lower.includes(word)) score += 0.5;
+    }
 
-    if (matchScore + descScore > 0) {
-      return agent;
+    if (score > bestScore) {
+      bestScore = score;
+      bestAgent = agent;
     }
   }
 
-  // Default to department director for unmatched tasks
-  return dept.director;
+  // Return best specialist if score > 0, otherwise department director
+  return bestScore > 0 ? bestAgent : dept.director;
 }
 
 // ============================================================================

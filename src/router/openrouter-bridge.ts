@@ -85,21 +85,43 @@ export async function execute(
     (body as any).models = [request.forceModel];
   }
 
-  // Execute
-  const response = await fetch(OPENROUTER_BASE_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://siempre-swarm.local',
-      'X-Title': 'Siempre Swarm',
-    },
-    body: JSON.stringify(body),
-  });
+  // Execute with retry on rate limit
+  const allModels = [route.model, ...route.fallbacks];
+  let response: Response | undefined;
+  let modelUsedIdx = 0;
 
-  if (!response.ok) {
+  for (let attempt = 0; attempt < allModels.length; attempt++) {
+    const currentBody = { ...body as any, model: allModels[attempt].id, models: undefined };
+
+    response = await fetch(OPENROUTER_BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://siempre-swarm.local',
+        'X-Title': 'Siempre Swarm',
+      },
+      body: JSON.stringify(currentBody),
+    });
+
+    if (response.ok) {
+      modelUsedIdx = attempt;
+      break;
+    }
+
+    // On 429 (rate limit), try next model
+    if (response.status === 429 && attempt < allModels.length - 1) {
+      console.log(`[bridge] ${allModels[attempt].id} rate-limited, trying ${allModels[attempt + 1].id}...`);
+      continue;
+    }
+
+    // Other errors — fail
     const errorText = await response.text();
     throw new Error(`OpenRouter error (${response.status}): ${errorText}`);
+  }
+
+  if (!response || !response.ok) {
+    throw new Error('All models rate-limited');
   }
 
   const data = await response.json();
@@ -111,7 +133,7 @@ export async function execute(
   const usage = data.usage || {};
   const inputTokens = usage.prompt_tokens || 0;
   const outputTokens = usage.completion_tokens || 0;
-  const modelUsed = data.model || route.model.id;
+  const modelUsed = data.model || allModels[modelUsedIdx].id;
 
   // Calculate cost (OpenRouter returns this in headers too)
   const actualCost = parseFloat(response.headers.get('x-openrouter-cost') || '0') ||
