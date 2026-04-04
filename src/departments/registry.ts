@@ -6,6 +6,7 @@
  */
 
 import type { Department, AgentRole, DepartmentId } from './types.js';
+import { designSwarmDepartment } from './design-swarm.js';
 
 // ============================================================================
 // 1. PRICING DEPARTMENT
@@ -378,7 +379,7 @@ export const DEPARTMENTS: Record<DepartmentId, Department> = {
   pricing: pricingDepartment,
   sales_intel: salesIntelDepartment,
   research: researchDepartment,
-  creative: creativeDepartment,
+  creative: designSwarmDepartment as any,  // Design Swarm replaces basic Creative dept
   comms: commsDepartment,
   devops: devopsDepartment,
 };
