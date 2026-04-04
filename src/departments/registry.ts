@@ -19,7 +19,7 @@ const pricingDirector: AgentRole = {
   containerTag: 'dept_pricing',
   description: 'Master pricing strategist. Holds all pricing logic, distributor language, channel strategy. Reviews all state-specific proposals for brand consistency.',
   capabilities: ['pricing_strategy', 'margin_analysis', 'distributor_negotiation', 'compliance_overview'],
-  modelTier: 'mid',
+  modelTier: 'top', // Stratum IV — C-Suite, holds 35 states + margins + relationships in parallel
   systemPrompt: `You are the Pricing Director for Siempre Spirits. You oversee pricing strategy across all US states and Canadian provinces. You understand distributor lingo (FOB, SRP, depletion allowances, channel pricing, on-premise vs off-premise). You teach state agents the universal pricing language and review their work for brand consistency. When a state agent completes a proposal, you verify margins, compliance, and strategic alignment before it goes to Alex.`,
 };
 
@@ -72,7 +72,7 @@ const salesIntelDepartment: Department = {
     containerTag: 'dept_sales_intel',
     description: 'Aggregates insights from all data sources. Identifies trends, anomalies, and opportunities.',
     capabilities: ['data_synthesis', 'trend_analysis', 'anomaly_detection', 'reporting'],
-    modelTier: 'mid',
+    modelTier: 'top', // Stratum IV — C-Suite, synthesizes 6 data sources into strategic intelligence
     systemPrompt: `You are the Sales Intelligence Director for Siempre Spirits. You synthesize data from multiple sources: VIP iDig (US depletions), Winebow DiverPort (CA/regional), Oklahoma portal, Canadian provincial portals, and Prestige NWOW (shipments/revenue). Your job is to identify trends, flag anomalies, compare against targets, and produce actionable intelligence for Alex. Always cite your data source.`,
   },
   agents: [

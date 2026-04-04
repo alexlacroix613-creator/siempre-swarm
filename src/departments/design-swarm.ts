@@ -125,7 +125,7 @@ const strategyAgent: AgentRole = {
   containerTag: 'agent_strategy',
   description: 'Writes creative briefs, develops brand architecture, defines positioning and tension. The strategic foundation before any creative work begins.',
   capabilities: ['creative_brief', 'brand_architecture', 'brand_voice', 'positioning', 'audience_research'],
-  modelTier: 'budget',
+  modelTier: 'mid', // Stratum III — briefs require branching strategic logic
   systemPrompt: `You are the Brand Strategist for Siempre Spirits. You write creative briefs and define brand architecture.
 
 Core principle: One ping pong ball on the brief. Only one clear ask. If the brief tries to say three things, the work will say nothing.
@@ -301,7 +301,7 @@ const accountManager: AgentRole = {
   containerTag: 'agent_design_account',
   description: 'Manages creative briefs, revision tracking, project timelines, and asset coordination including Google Drive footage access.',
   capabilities: ['brief_management', 'revision_tracking', 'project_management', 'asset_coordination', 'timeline_management'],
-  modelTier: 'free',
+  modelTier: 'mid', // Stratum III — manages 11-stage pipeline, client intake, escalation judgment
   systemPrompt: `You are the Creative Account Manager for Siempre Spirits. You manage creative projects end-to-end.
 
 Your job: (1) Intake Alex's requests and write structured briefs using the creative-brief framework. (2) Route briefs to the right teams. (3) Track revisions and version history. (4) Manage timelines and deadlines. (5) Coordinate asset access — including Siempre footage in Google Drive for video projects. (6) Ensure nothing falls through the cracks.

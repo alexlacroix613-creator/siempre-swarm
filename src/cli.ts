@@ -12,6 +12,9 @@
 
 import { Orchestrator } from './orchestrator.js';
 import { getAgentCount, getAllAgents, DEPARTMENTS } from './departments/registry.js';
+import { PRODUCT_TEAMS, getProductTeamStats } from './departments/product-teams.js';
+import { QualityTracker } from './governance/quality-tracker.js';
+import { AGENT_STRATA, WORK_HORIZONS, getStratumSummary } from './departments/work-horizons.js';
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '';
 const SUPERMEMORY_KEY = process.env.SUPERMEMORY_API_KEY || '';
@@ -77,20 +80,46 @@ async function main() {
 
     case 'agents': {
       const counts = getAgentCount();
-      console.log(`\nSiempre Swarm — Agent Registry`);
-      console.log(`${'='.repeat(50)}`);
-      console.log(`Departments: ${counts.departments}`);
-      console.log(`Directors: ${counts.directors}`);
-      console.log(`Specialists: ${counts.agents}`);
-      console.log(`Total: ${counts.total}`);
-      console.log(`${'='.repeat(50)}\n`);
+      const productStats = getProductTeamStats();
+      const stratumSummary = getStratumSummary();
 
+      console.log(`\nSiempre Swarm — Full Organization`);
+      console.log(`${'='.repeat(55)}`);
+      console.log(`\nSIEMPRE DEPARTMENTS`);
+      console.log(`  Departments: ${counts.departments} | Directors: ${counts.directors} | Agents: ${counts.agents}`);
+      console.log(`\nPRODUCT TEAMS`);
+      console.log(`  Products: ${productStats.teams} | Leads: ${productStats.leads} | Devs: ${productStats.devs}`);
+      console.log(`\nTOTAL: ${counts.total + productStats.total} agents`);
+      console.log(`\nWORK HORIZONS`);
+      for (const [stratum, data] of Object.entries(stratumSummary)) {
+        const h = WORK_HORIZONS[stratum as keyof typeof WORK_HORIZONS];
+        console.log(`  Stratum ${stratum} (${h.modelTier}): ${data.count} agents — ${h.cognitiveMode.split('—')[0].trim()}`);
+      }
+      console.log(`${'='.repeat(55)}`);
+
+      // Departments
       for (const [id, dept] of Object.entries(DEPARTMENTS)) {
+        const dirStratum = AGENT_STRATA[dept.director.id];
         console.log(`\n${dept.name} (${id})`);
-        console.log(`  Director: ${dept.director.name} [${dept.director.modelTier}]`);
+        console.log(`  Director: ${dept.director.name} [Stratum ${dirStratum?.stratum || '?'} → ${dirStratum ? WORK_HORIZONS[dirStratum.stratum].modelTier : dept.director.modelTier}]`);
         console.log(`  Memory: ${dept.containerTag}`);
         for (const agent of dept.agents) {
-          console.log(`  Agent: ${agent.name} [${agent.modelTier}] → ${agent.containerTag}`);
+          const s = AGENT_STRATA[agent.id];
+          const tier = s ? WORK_HORIZONS[s.stratum].modelTier : agent.modelTier;
+          console.log(`  Agent: ${agent.name} [Stratum ${s?.stratum || 'I'} → ${tier}] → ${agent.containerTag}`);
+        }
+      }
+
+      // Product Teams
+      console.log(`\n${'─'.repeat(55)}`);
+      console.log('PRODUCT TEAMS');
+      for (const [id, team] of Object.entries(PRODUCT_TEAMS)) {
+        console.log(`\n${team.name} (${id})`);
+        console.log(`  URL: ${team.productionUrl} | Deploy: ${team.deployPlatform}`);
+        console.log(`  Phase: ${team.currentPhase}`);
+        console.log(`  Lead: ${team.lead.name} [Stratum III → mid]`);
+        for (const agent of team.agents) {
+          console.log(`  Dev: ${agent.name} [Stratum I → free]`);
         }
       }
       break;
@@ -139,10 +168,44 @@ async function main() {
       break;
     }
 
+    case 'quality': {
+      try {
+        const tracker = new QualityTracker();
+        console.log(`\n${tracker.formatReport()}`);
+        const agentScores = tracker.agentScores();
+        if (agentScores.length > 0) {
+          console.log('\nPER-AGENT SCORES');
+          console.log('─'.repeat(40));
+          for (const a of agentScores) {
+            console.log(`  ${a.agentId}: ${a.totalReviews} reviews, ${Math.round(a.approveRate * 100)}% approve, ${Math.round(a.redoRate * 100)}% redo → ${a.recommendation}`);
+          }
+        }
+        tracker.close();
+      } catch (e) {
+        console.log('Quality tracker not initialized yet. Run some tasks first.');
+      }
+      break;
+    }
+
+    case 'standup': {
+      // Run the morning briefing
+      const { execFileSync: runFile } = await import('child_process');
+      try {
+        const output = runFile('npx', ['tsx', 'src/ops/morning-briefing.ts'], {
+          cwd: process.cwd(),
+          encoding: 'utf-8',
+          timeout: 30000,
+        });
+        console.log(output);
+      } catch (e) {
+        console.error('Morning briefing failed:', e instanceof Error ? e.message : e);
+      }
+      break;
+    }
+
     case 'stats': {
       console.log(`\nRouting Statistics`);
       console.log(`${'='.repeat(50)}`);
-      // Stats are per-session, so this only shows current run
       console.log('No tasks processed in this session yet.');
       console.log('Run some tasks first, then check stats.');
       break;
@@ -160,8 +223,10 @@ Siempre Swarm CLI
 
 Commands:
   task "<prompt>"    Process a task through the swarm
-  agents             List all departments and agents
-  briefing           Get the executive briefing
+  agents             List all departments, product teams, and work horizons
+  standup            Morning briefing — repos, deployments, quality, state
+  quality            Agent quality scores and recommendations
+  briefing           Executive briefing from department reports
   search "<query>"   Search across department memories
   stats              Show routing statistics
 
