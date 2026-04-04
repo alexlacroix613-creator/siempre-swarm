@@ -56,8 +56,19 @@ async function main() {
           console.log(`Latency: ${result.metadata.latencyMs}ms`);
         }
       }
-      console.log(`\n--- Content ---\n`);
-      console.log(result.content);
+      if (result.review) {
+        console.log(`\n${'='.repeat(60)}`);
+        console.log(`  PENDING REVIEW — Agent work needs Opus inspection`);
+        console.log(`${'='.repeat(60)}`);
+        console.log(`\n${result.review.summary}\n`);
+        console.log(`--- Agent Output (for review) ---\n`);
+        console.log(result.content);
+        console.log(`\n--- Review Prompt (for Claude/Opus) ---\n`);
+        console.log(result.review.reviewPrompt);
+      } else {
+        console.log(`\n--- Content ---\n`);
+        console.log(result.content);
+      }
 
       console.log(`\n--- Routing Stats ---`);
       console.log(orchestrator.getRoutingStats());

@@ -151,10 +151,18 @@ export class Orchestrator {
         // Release locks
         releaseAgentLocks(this.projectDir, agent.id);
 
+        // Build review package for Claude (Opus) to inspect before
+        // presenting to Alex. The free model did the work — Opus
+        // applies judgment, context, and quality control.
+        const reviewPackage = this.buildReviewPackage(
+          agentTask, response, agent as any, deptId, prompt
+        );
+
         return {
           taskId,
-          status: 'completed',
+          status: 'pending_review',
           content: response.content,
+          review: reviewPackage,
           metadata: {
             category,
             tier: route.tier,
@@ -198,6 +206,59 @@ export class Orchestrator {
         },
       };
     }
+  }
+
+  /**
+   * Build a review package for Claude (Opus) to inspect agent work.
+   *
+   * This is the "boss checks the employee's work" layer.
+   * The free model did the heavy lifting — Opus applies:
+   * - Quality judgment (is this actually good?)
+   * - Context awareness (does this conflict with what we know?)
+   * - Accuracy check (are the numbers/facts plausible?)
+   * - Completeness check (did the agent miss anything?)
+   * - Recommendation (approve, revise, or redo?)
+   */
+  private buildReviewPackage(
+    task: AgentTask,
+    response: BridgeResponse,
+    agent: { id: string; name: string; department: string },
+    deptId: DepartmentId,
+    originalPrompt: string
+  ): ReviewPackage {
+    return {
+      summary: `${agent.name} (${DEPARTMENTS[deptId].name}) completed task using ${response.model} [${response.tier} tier, $${response.cost.toFixed(6)}]`,
+      originalPrompt,
+      agentOutput: response.content,
+      agentId: agent.id,
+      department: deptId,
+      model: response.model,
+      tier: response.tier,
+      cost: response.cost,
+      reviewPrompt: [
+        `## Review Request`,
+        ``,
+        `**Agent:** ${agent.name} (${agent.id})`,
+        `**Department:** ${DEPARTMENTS[deptId].name}`,
+        `**Model:** ${response.model} (${response.tier} tier, $${response.cost.toFixed(6)})`,
+        `**Tokens:** ${response.inputTokens} in / ${response.outputTokens} out`,
+        ``,
+        `**Original Task:**`,
+        originalPrompt,
+        ``,
+        `**Agent's Work:**`,
+        response.content,
+        ``,
+        `**Review Checklist:**`,
+        `1. QUALITY — Is this work good enough to present to Alex?`,
+        `2. ACCURACY — Are the facts, numbers, and claims plausible? Flag anything that needs verification.`,
+        `3. CONTEXT — Does this conflict with anything we know from recent sessions, supermemory, or project state?`,
+        `4. COMPLETENESS — Did the agent miss anything the original prompt asked for?`,
+        `5. JUDGMENT — Would you change anything before Alex sees this?`,
+        ``,
+        `**Your recommendation:** APPROVE (present as-is) | ANNOTATE (present with your notes) | REVISE (you fix specific issues) | REDO (task needs to be re-run)`,
+      ].join('\n'),
+    };
   }
 
   /**
@@ -410,7 +471,20 @@ function selectBestAgent(dept: typeof DEPARTMENTS[DepartmentId], prompt: string)
 
 export interface TaskResult {
   taskId: string;
-  status: 'completed' | 'failed' | 'blocked' | 'requires_task_tool';
+  status: 'completed' | 'failed' | 'blocked' | 'requires_task_tool' | 'pending_review';
   content: string;
+  review?: ReviewPackage;
   metadata?: Record<string, unknown>;
+}
+
+export interface ReviewPackage {
+  summary: string;
+  originalPrompt: string;
+  agentOutput: string;
+  agentId: string;
+  department: DepartmentId;
+  model: string;
+  tier: string;
+  cost: number;
+  reviewPrompt: string;         // Structured prompt for Opus to review the work
 }
