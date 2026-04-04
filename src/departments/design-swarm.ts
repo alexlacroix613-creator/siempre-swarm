@@ -1,23 +1,35 @@
 /**
- * Design Swarm Department — Evolved Creative Department
+ * Design Swarm Department — Real Agency Structure
  *
- * Combines the Alex Protocol creative frameworks (CRAFTS test,
- * concept buckets, CD review, visual identity system) with
- * multi-model swarm execution for genuine creative diversity.
+ * Follows the Alex Protocol / Thanks Tim creative process exactly.
+ * Teams are copywriter + art director PAIRS who collaborate.
+ * Tim (ECD) uses Opus for top-tier creative judgment.
  *
  * Architecture:
- *   Tim (ECD) — Reviews everything, applies CRAFTS framework
- *     ├── Strategy Team — Brief writing, brand architecture, voice
- *     ├── Visual Team — Identity, photography direction, packaging
- *     ├── Digital Team — Social, web, interactive, video (Remotion)
- *     ├── Copy Team — Headlines, body copy, tone matching
- *     ├── Production Team — Proofreading, compliance, asset management
- *     └── Account Management — Brief intake, revision tracking
+ *   Tim (ECD, Opus) — Creative genius. Reviews with CRAFTS + Star/Kill/Redirect/Provoke
+ *     ├── Account Manager — Asks qualifying questions, researches, writes brief
+ *     ├── Brand Strategist — Architecture, voice, positioning
+ *     ├── Creative Team A — Copywriter A + Art Director A (pair, one free model)
+ *     ├── Creative Team B — Copywriter B + Art Director B (pair, different free model)
+ *     ├── Video Specialist — Remotion production
+ *     ├── Production — Proofreading, TTB compliance, QA
+ *     └── Digital — Social, web, interactive execution
  *
- * Key innovation: Each creative team uses a DIFFERENT free model
- * via OpenRouter, producing genuinely diverse creative perspectives.
- * This replaces "one brain pretending to be four teams" with
- * actual cognitive diversity.
+ * Pipeline (with gates):
+ *   1. Account Manager asks client qualifying questions
+ *   2. Account Manager researches online, drafts brief
+ *   3. Tim reviews brief → feedback loop until solid
+ *   4. Alex approves brief (GATE — no work without approval)
+ *   5. Creative Team A (copywriter+AD) develops concepts
+ *   6. Creative Team B (copywriter+AD) develops concepts independently
+ *   7. Tim reviews ALL with Star/Kill/Redirect/Provoke
+ *   8. Teams revise based on Tim's feedback
+ *   9. Tim reviews again → shortlists if happy, else another round
+ *  10. Opus (me) reviews with business context awareness
+ *  11. Present to Alex with Tim's rationale + my assessment
+ *
+ * Key: Different free models per team = genuine cognitive diversity.
+ * Tim on Opus = the creative judgment this process demands.
  */
 
 import type { Department, AgentRole } from './types.js';
@@ -28,7 +40,7 @@ import type { Department, AgentRole } from './types.js';
 // ============================================================================
 
 const MODEL_ASSIGNMENTS = {
-  tim_ecd: 'mid',               // Tim needs Sonnet-level for strategic review
+  tim_ecd: 'top',               // Tim uses Opus — he's the creative genius, non-negotiable
   strategy: 'budget',           // Strategy needs solid reasoning
   visual_team_lead: 'free',     // Qwen — good at structured visual descriptions
   visual_team_b: 'free',        // Nemotron — different creative perspective
@@ -92,7 +104,7 @@ const timECD: AgentRole = {
   containerTag: 'dept_design',
   description: 'Executive Creative Director. Reviews all creative output using CRAFTS framework. Applies CD review process (Star/Kill/Redirect/Provoke). Makes advance/kill decisions. Enforces concept buckets vs style explorations distinction.',
   capabilities: ['creative_direction', 'brand_review', 'crafts_evaluation', 'concept_development', 'cd_review'],
-  modelTier: 'mid',
+  modelTier: 'top',
   systemPrompt: `You are Tim, the Executive Creative Director for Siempre Spirits and Alex's ventures. You review all creative work with world-class taste and judgment.
 
 ${CRAFTS_FRAMEWORK}
@@ -123,38 +135,80 @@ Brief structure: Business Objective → Target Audience (a person, not a segment
 You work upstream from all creative teams. Your brief is the most important creative artifact. A bad brief produces bad work no matter how talented the team.`,
 };
 
-const visualTeamLead: AgentRole = {
-  id: 'visual_team_a',
-  name: 'Visual Team A — Identity & Direction',
+// ============================================================================
+// CREATIVE TEAM A — Copywriter + Art Director pair (one free model)
+// They collaborate on concepts together, each bringing their lens.
+// ============================================================================
+
+const copywriterA: AgentRole = {
+  id: 'copywriter_a',
+  name: 'Copywriter A',
   department: 'design',
-  containerTag: 'agent_visual_a',
-  description: 'Visual identity development, photography direction, color systems, mood definition. Applies the Camera Test and Visual DNA framework.',
-  capabilities: ['visual_identity', 'photography_direction', 'color_system', 'mood_board', 'art_direction'],
+  containerTag: 'agent_team_a',
+  description: 'Team A copywriter. Thinks in words, headlines, narrative. Works WITH Art Director A to develop concepts together.',
+  capabilities: ['copywriting', 'headline_writing', 'conceptual_writing', 'tagline_development'],
   modelTier: 'free',
-  systemPrompt: `You are Visual Team A for Siempre Spirits. You develop visual identity and art direction.
+  systemPrompt: `You are Copywriter A for Siempre Spirits. You work as a PAIR with Art Director A — you think in words, they think in pictures. Together you develop concepts.
 
-${VISUAL_IDENTITY_FRAMEWORK}
+Your job: headlines, taglines, body copy, narrative. But you don't just write — you CONCEPT. A concept is an idea that can be expressed visually AND verbally. When you write a headline, you should be able to describe the visual that goes with it. When Art Director A proposes a visual, you find the words that make it sing.
 
-Your visual solutions must pass the Scroll-Stop Test: if someone saw this image with no logo, no caption, no context — would they stop scrolling? Would they save it?
+${CONCEPT_BUCKETS_RULE}
 
-Anti-references are as important as references. They prevent the brand from blending into its category. For spirits specifically, avoid: over-styled flat lays, generic sunset shots with bottles, stock photo "lifestyle" imagery.`,
+Voice: Confident, warm, never pretentious. The brand is accessible premium — quality without gatekeeping. Your copy must pass the Competitor Swap Test: if you put another brand's name on it, does it still work? If yes, it's not distinctive enough.`,
 };
 
-const visualTeamB: AgentRole = {
-  id: 'visual_team_b',
-  name: 'Visual Team B — Alternative Perspectives',
+const artDirectorA: AgentRole = {
+  id: 'art_director_a',
+  name: 'Art Director A',
   department: 'design',
-  containerTag: 'agent_visual_b',
-  description: 'Second visual team providing genuinely different creative perspectives. Uses a different AI model for cognitive diversity.',
-  capabilities: ['visual_identity', 'packaging_design', 'print_design', 'art_direction'],
+  containerTag: 'agent_team_a',
+  description: 'Team A art director. Thinks visually — composition, photography, color, mood. Works WITH Copywriter A to develop concepts together.',
+  capabilities: ['art_direction', 'visual_identity', 'photography_direction', 'mood_board', 'layout_design'],
   modelTier: 'free',
-  systemPrompt: `You are Visual Team B for Siempre Spirits. You provide ALTERNATIVE visual perspectives — your job is to challenge Team A's direction with genuinely different ideas.
+  systemPrompt: `You are Art Director A for Siempre Spirits. You work as a PAIR with Copywriter A — you think in pictures, they think in words. Together you develop concepts.
 
 ${VISUAL_IDENTITY_FRAMEWORK}
 
-When you receive the same brief as Team A, your goal is to explore a completely different visual territory. If Team A went warm and analog, you go cold and precise. If they went editorial, you go raw. The CD (Tim) needs RANGE to make good decisions.
+Your job: visual concepts, photography direction, composition, color, mood, layout. But you don't just make things pretty — you CONCEPT. A concept is an idea that works visually AND verbally. When Copywriter A writes a headline, you find the visual that gives it power. When you propose a visual direction, they find the words.
 
-Remember: Concept Buckets ≠ Style Explorations. Your work must be a fundamentally different IDEA, not a different treatment of Team A's idea.`,
+Your visual solutions must pass the Scroll-Stop Test: would someone stop scrolling? Would they save it? Anti-references are as important as references. For spirits: avoid over-styled flat lays, generic sunset bottles, stock lifestyle imagery.`,
+};
+
+// ============================================================================
+// CREATIVE TEAM B — Different copywriter + art director pair (different free model)
+// Genuinely different creative perspectives through cognitive diversity.
+// ============================================================================
+
+const copywriterB: AgentRole = {
+  id: 'copywriter_b',
+  name: 'Copywriter B',
+  department: 'design',
+  containerTag: 'agent_team_b',
+  description: 'Team B copywriter. Works WITH Art Director B. Different model from Team A for genuine creative diversity.',
+  capabilities: ['copywriting', 'headline_writing', 'conceptual_writing', 'long_form_copy'],
+  modelTier: 'free',
+  systemPrompt: `You are Copywriter B for Siempre Spirits. You work as a PAIR with Art Director B. You are a DIFFERENT creative team from Team A — your job is to explore genuinely different territory.
+
+When you receive the same brief as Team A, your concepts must be fundamentally different IDEAS, not different executions of the same idea. If Team A goes clever, you go emotional. If they go minimal, you go rich. The CD (Tim) needs RANGE.
+
+Voice: Same brand voice (confident, warm, never pretentious) but your creative interpretation should come from a different place. You and Art Director B collaborate — you bring the words, they bring the visuals, together you build something neither would alone.`,
+};
+
+const artDirectorB: AgentRole = {
+  id: 'art_director_b',
+  name: 'Art Director B',
+  department: 'design',
+  containerTag: 'agent_team_b',
+  description: 'Team B art director. Works WITH Copywriter B. Different model from Team A for genuine creative diversity.',
+  capabilities: ['art_direction', 'visual_identity', 'packaging_design', 'photography_direction'],
+  modelTier: 'free',
+  systemPrompt: `You are Art Director B for Siempre Spirits. You work as a PAIR with Copywriter B. You are a DIFFERENT creative team from Team A — your job is to challenge their visual territory with genuinely different ideas.
+
+${VISUAL_IDENTITY_FRAMEWORK}
+
+When you receive the same brief, explore a completely different visual world. If Team A went warm and analog, you go cold and precise. If they went editorial, you go raw. Concept Buckets ≠ Style Explorations — your work must be a fundamentally different IDEA.
+
+Collaborate with Copywriter B: they bring words, you bring visuals. Together the concept is stronger than either part.`,
 };
 
 const digitalTeamLead: AgentRole = {
@@ -268,15 +322,15 @@ export const designSwarmDepartment: Department = {
   containerTag: 'dept_design',
   director: timECD,
   agents: [
+    accountManager,
     strategyAgent,
-    visualTeamLead,
-    visualTeamB,
+    copywriterA,
+    artDirectorA,
+    copywriterB,
+    artDirectorB,
     digitalTeamLead,
     videoSpecialist,
-    copyTeamA,
-    copyTeamB,
     productionManager,
-    accountManager,
   ],
   routingKeywords: [
     'design', 'creative', 'brand', 'visual', 'identity', 'logo', 'packaging', 'label',
@@ -290,25 +344,33 @@ export const designSwarmDepartment: Department = {
 };
 
 /**
- * The Design Swarm creative pipeline (concept bucket methodology):
+ * The Design Swarm creative pipeline (real agency process):
  *
- * 1. BRIEF — Account Manager intakes, Strategy writes brief
- * 2. EXPLORE — Visual A + Visual B + Copy A + Copy B each produce
- *    3 concept directions independently (12 ideas total from 4 teams)
- * 3. CD REVIEW — Tim reviews all 12, applies CRAFTS test,
- *    shortlists 3-4 concepts, may recombine elements
- * 4. DEVELOP — Shortlisted concepts get full development
- *    (digital team, video specialist add execution)
- * 5. REFINE — Production checks compliance, proofreading
- * 6. PRESENT — Tim presents 3 final directions to Alex
- * 7. EXECUTE — Alex picks, team produces finals
+ *  1. INTAKE — Account Manager asks client qualifying questions
+ *  2. RESEARCH — Account Manager researches online (competitors, trends)
+ *  3. BRIEF_DRAFT — Account Manager writes brief, Tim reviews
+ *  4. BRIEF_APPROVAL — Alex approves brief (GATE — no work without this)
+ *  5. CONCEPTING — Team A (copywriter+AD) and Team B (copywriter+AD)
+ *     develop concepts independently from the same brief
+ *  6. TIM_REVIEW_1 — Tim reviews ALL concepts: Star/Kill/Redirect/Provoke
+ *  7. REVISION — Teams revise based on Tim's feedback
+ *  8. TIM_REVIEW_2 — Tim reviews again, shortlists if happy
+ *  9. OPUS_REVIEW — Claude (Opus) reviews with business context
+ * 10. PRESENT — Final options presented to Alex with rationale
+ * 11. EXECUTE — Alex picks, team produces finals (digital, video, production)
  */
 export const DESIGN_PIPELINE_STAGES = [
-  'brief',
-  'explore',
-  'cd_review',
-  'develop',
-  'refine',
-  'present',
-  'execute',
+  'intake',           // Account Manager asks qualifying questions
+  'research',         // Account Manager researches online
+  'brief_draft',      // Brief written, Tim reviews
+  'brief_approval',   // GATE: Alex approves before work begins
+  'concepting',       // Team A + Team B work independently
+  'tim_review_1',     // Star/Kill/Redirect/Provoke feedback
+  'revision',         // Teams revise
+  'tim_review_2',     // Tim shortlists (or another feedback round)
+  'opus_review',      // Context awareness check
+  'present',          // Final options to Alex
+  'execute',          // Production, digital, video
 ] as const;
+
+export type DesignPipelineStage = typeof DESIGN_PIPELINE_STAGES[number];
