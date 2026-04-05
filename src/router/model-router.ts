@@ -29,41 +29,49 @@ interface ModelConfig {
 }
 
 // Models ordered by preference within each tier.
-// Free models rotate on OpenRouter — fallbacks handle unavailability.
+// Aligned with openrouter-stack.skill research (March 2026 verified pricing).
+// Escalation ladder: Free → Budget → Mid → Top. Never skip tiers.
 const MODEL_REGISTRY: Record<TaskTier, ModelConfig[]> = {
-  // Updated 2026-04-04 from live OpenRouter /models endpoint
+  // Free tier — handles 80% of tasks. Always start here.
   free: [
     { id: 'qwen/qwen3.6-plus:free', tier: 'free', contextWindow: 1_000_000, costPerMInput: 0, costPerMOutput: 0 },
+    { id: 'meta-llama/llama-3.3-70b-instruct:free', tier: 'free', contextWindow: 131_072, costPerMInput: 0, costPerMOutput: 0 },
+    { id: 'deepseek/deepseek-r1:free', tier: 'free', contextWindow: 163_840, costPerMInput: 0, costPerMOutput: 0 },
     { id: 'nvidia/nemotron-3-super-120b-a12b:free', tier: 'free', contextWindow: 262_144, costPerMInput: 0, costPerMOutput: 0 },
     { id: 'qwen/qwen3-coder:free', tier: 'free', contextWindow: 262_000, costPerMInput: 0, costPerMOutput: 0 },
     { id: 'google/gemma-3-27b-it:free', tier: 'free', contextWindow: 131_072, costPerMInput: 0, costPerMOutput: 0 },
-    { id: 'nousresearch/hermes-3-llama-3.1-405b:free', tier: 'free', contextWindow: 131_072, costPerMInput: 0, costPerMOutput: 0 },
   ],
+  // Budget tier — DeepSeek V3.2 is the default paid choice.
+  // 90% of GPT-5.4 quality at 1/50th cost. 90% cache discount.
   budget: [
-    { id: 'google/gemini-2.0-flash-001', tier: 'budget', contextWindow: 1_000_000, costPerMInput: 0.10, costPerMOutput: 0.40 },
-    { id: 'deepseek/deepseek-chat', tier: 'budget', contextWindow: 64_000, costPerMInput: 0.14, costPerMOutput: 0.28 },
+    { id: 'deepseek/deepseek-v3.2', tier: 'budget', contextWindow: 163_840, costPerMInput: 0.26, costPerMOutput: 0.38 },
+    { id: 'google/gemini-2.0-flash-lite', tier: 'budget', contextWindow: 1_000_000, costPerMInput: 0.075, costPerMOutput: 0.30 },
+    { id: 'google/gemini-3.1-flash-lite', tier: 'budget', contextWindow: 1_000_000, costPerMInput: 0.25, costPerMOutput: 1.50 },
   ],
+  // Mid tier — Anthropic when voice/nuance matters.
   mid: [
-    { id: 'anthropic/claude-3.5-haiku', tier: 'mid', contextWindow: 200_000, costPerMInput: 0.80, costPerMOutput: 4.00 },
-    { id: 'anthropic/claude-sonnet-4', tier: 'mid', contextWindow: 200_000, costPerMInput: 3.00, costPerMOutput: 15.00 },
+    { id: 'anthropic/claude-haiku-4-5', tier: 'mid', contextWindow: 200_000, costPerMInput: 1.00, costPerMOutput: 5.00 },
+    { id: 'anthropic/claude-sonnet-4-6', tier: 'mid', contextWindow: 1_000_000, costPerMInput: 3.00, costPerMOutput: 15.00 },
   ],
+  // Top tier — last resort. Only when Sonnet genuinely fails.
   top: [
-    { id: 'anthropic/claude-opus-4', tier: 'top', contextWindow: 200_000, costPerMInput: 15.00, costPerMOutput: 75.00 },
+    { id: 'anthropic/claude-opus-4-6', tier: 'top', contextWindow: 200_000, costPerMInput: 5.00, costPerMOutput: 25.00 },
   ],
 };
 
-// Task → Tier mapping. Simple tasks go to free models.
+// Task → Tier mapping. Bias toward free/budget. Escalate deliberately.
+// Matches openrouter-stack.skill escalation ladder.
 const TASK_TIER_MAP: Record<TaskCategory, TaskTier> = {
   classify: 'free',
   summarize: 'free',
   format: 'free',
   lookup: 'free',
-  draft: 'free',
+  draft: 'free',         // First drafts are free. Polish escalates.
   code_simple: 'free',
-  research: 'budget',
-  review: 'mid',
-  code_complex: 'mid',
-  reason: 'top',
+  research: 'budget',    // DeepSeek V3.2 — handles 90% of research
+  review: 'budget',      // DeepSeek V3.2 — good enough for most reviews
+  code_complex: 'mid',   // Sonnet when architecture matters
+  reason: 'mid',         // Sonnet first, not Opus. Escalate manually if needed.
 };
 
 export interface RouteResult {
