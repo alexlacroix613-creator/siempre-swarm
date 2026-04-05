@@ -18,6 +18,7 @@ import { execute, getStats, formatStats, type BridgeRequest, type BridgeResponse
 import { SupermemoryClient, DEPARTMENT_TAGS, type SearchOptions } from './memory/supermemory-client.js';
 import { acquireFileLock, releaseAgentLocks, checkBranchIsolation, cleanExpiredLocks } from './governance/session-lock.js';
 import { EventBus, createEvent } from './events/index.js';
+import { validatePacket, fromPrompt, type TaskPacket } from './tasks/packet.js';
 import type { AgentTask, ExecutiveBriefing, DepartmentReport } from './departments/types.js';
 import type { EventSource, FailureClass } from './events/index.js';
 
@@ -397,6 +398,43 @@ export class Orchestrator {
         console.error(`[orchestrator] Failed to store result in supermemory:`, error);
       }
     }
+  }
+
+  /**
+   * Process a structured TaskPacket — the preferred entry point.
+   * Validates the packet, then delegates to processTask with
+   * the packet's routing and governance hints.
+   */
+  async processPacket(packet: TaskPacket): Promise<TaskResult> {
+    const validation = validatePacket(packet);
+    if (!validation.valid) {
+      const taskId = `task-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      this.events.emit(createEvent('task.failed', { component: 'orchestrator' }, {
+        error: `Invalid task packet: ${validation.errors.join('; ')}`,
+        failureClass: 'invalid_task_packet',
+        recoverable: false,
+      }, taskId));
+      return {
+        taskId,
+        status: 'failed',
+        content: `Task packet validation failed:\n${validation.errors.map(e => `  - ${e}`).join('\n')}`,
+        metadata: { validationErrors: validation.errors },
+      };
+    }
+
+    return this.processTask(packet.prompt, {
+      department: packet.routing?.department,
+      agentId: packet.routing?.agentId,
+      files: packet.files,
+    });
+  }
+
+  /**
+   * Convenience: wrap a raw prompt string in a TaskPacket and process it.
+   * This is the migration path from the old string interface.
+   */
+  async processPrompt(prompt: string, department?: DepartmentId): Promise<TaskResult> {
+    return this.processPacket(fromPrompt(prompt, department));
   }
 
   /**
