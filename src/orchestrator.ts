@@ -11,18 +11,22 @@
  *   store results in supermemory → report up
  */
 
+import { join } from 'path';
 import { DEPARTMENTS, routeToDepartment, getAllAgents, type DepartmentId } from './departments/registry.js';
 import { classifyTask, routeTask, type TaskCategory } from './router/model-router.js';
 import { execute, getStats, formatStats, type BridgeRequest, type BridgeResponse } from './router/openrouter-bridge.js';
 import { SupermemoryClient, DEPARTMENT_TAGS, type SearchOptions } from './memory/supermemory-client.js';
 import { acquireFileLock, releaseAgentLocks, checkBranchIsolation, cleanExpiredLocks } from './governance/session-lock.js';
+import { EventBus, createEvent } from './events/index.js';
 import type { AgentTask, ExecutiveBriefing, DepartmentReport } from './departments/types.js';
+import type { EventSource, FailureClass } from './events/index.js';
 
 export interface OrchestratorConfig {
   openRouterApiKey: string;
   supermemoryApiKey: string;
   projectDir: string;
   verbose?: boolean;
+  eventLogDir?: string;            // Directory for JSONL event logs
 }
 
 export class Orchestrator {
@@ -32,12 +36,16 @@ export class Orchestrator {
   private verbose: boolean;
   private activeTasks: Map<string, AgentTask> = new Map();
   private completedTasks: AgentTask[] = [];
+  readonly events: EventBus;
 
   constructor(config: OrchestratorConfig) {
     this.openRouterKey = config.openRouterApiKey;
     this.memory = new SupermemoryClient(config.supermemoryApiKey);
     this.projectDir = config.projectDir;
     this.verbose = config.verbose ?? false;
+    this.events = new EventBus({
+      logDir: config.eventLogDir ?? join(config.projectDir, 'data', 'events'),
+    });
   }
 
   /**
@@ -59,10 +67,17 @@ export class Orchestrator {
     files?: string[];               // Files this task will touch (for locking)
   }): Promise<TaskResult> {
     const taskId = `task-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const src: EventSource = { component: 'orchestrator' };
 
     // Step 1: Classify
     const category = options?.category || classifyTask(prompt);
     const route = routeTask(category);
+
+    this.events.emit(createEvent('task.created', src, {
+      prompt,
+      category,
+      tier: route.tier,
+    }, taskId));
 
     if (this.verbose) {
       console.log(`[orchestrator] Task ${taskId}: category=${category}, tier=${route.tier}`);
@@ -71,6 +86,10 @@ export class Orchestrator {
     // Step 2: Route to department
     const deptId = options?.department || routeToDepartment(prompt);
     if (!deptId) {
+      this.events.emit(createEvent('task.blocked', src, {
+        reason: 'No department matched for this task',
+        blocker: 'no_department_match',
+      }, taskId));
       return {
         taskId,
         status: 'completed',
@@ -90,6 +109,10 @@ export class Orchestrator {
       : selectBestAgent(dept, prompt);
 
     if (!agent) {
+      this.events.emit(createEvent('task.blocked', src, {
+        reason: `No suitable agent found in ${dept.name}`,
+        blocker: 'no_agent_match',
+      }, taskId));
       return {
         taskId,
         status: 'failed',
@@ -102,10 +125,21 @@ export class Orchestrator {
       console.log(`[orchestrator] Agent: ${agent.name} (${agent.id}), tier=${agent.modelTier}`);
     }
 
+    this.events.emit(createEvent('task.routed', { component: 'router', department: deptId }, {
+      department: deptId,
+      agentId: agent.id,
+      agentName: agent.name,
+      modelTier: (agent as any).modelTier || route.tier,
+    }, taskId));
+
     // Step 4: Governance checks
     if (options?.files) {
       const lockResult = acquireFileLock(this.projectDir, agent.id, deptId, options.files);
       if (!lockResult.acquired) {
+        this.events.emit(createEvent('task.blocked', { component: 'governance' }, {
+          reason: `Governance lock conflict: ${lockResult.conflict?.reason}`,
+          blocker: 'governance_lock',
+        }, taskId));
         return {
           taskId,
           status: 'blocked',
@@ -133,8 +167,22 @@ export class Orchestrator {
     const effectiveTier = (agent as any).modelTier || route.tier;
 
     if (effectiveTier === 'free' || effectiveTier === 'budget') {
+      this.events.emit(createEvent('task.executing', { component: 'orchestrator', agentId: agent.id, department: deptId }, {
+        model: route.model.id,
+        tier: effectiveTier,
+      }, taskId));
+
       try {
         const response = await this.executeViaOpenRouter(agent, prompt, category);
+
+        this.events.emit(createEvent('task.completed', { component: 'orchestrator', agentId: agent.id, department: deptId }, {
+          model: response.model,
+          cost: response.cost,
+          latencyMs: response.latencyMs,
+          inputTokens: response.inputTokens,
+          outputTokens: response.outputTokens,
+          contentLength: response.content.length,
+        }, taskId));
 
         // Store result in supermemory
         await this.storeResult(agent.containerTag, taskId, prompt, response.content);
@@ -176,6 +224,18 @@ export class Orchestrator {
           },
         };
       } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        const failureClass: FailureClass = errorMsg.includes('timeout') ? 'openrouter_timeout'
+          : errorMsg.includes('rate') ? 'openrouter_rate_limit'
+          : errorMsg.includes('model') ? 'openrouter_model_unavailable'
+          : 'unknown';
+
+        this.events.emit(createEvent('task.failed', { component: 'orchestrator', agentId: agent.id, department: deptId }, {
+          error: errorMsg,
+          failureClass,
+          recoverable: failureClass !== 'unknown',
+        }, taskId));
+
         agentTask.status = 'failed';
         this.activeTasks.delete(taskId);
         releaseAgentLocks(this.projectDir, agent.id);
@@ -183,7 +243,7 @@ export class Orchestrator {
         return {
           taskId,
           status: 'failed',
-          content: `OpenRouter execution failed: ${error instanceof Error ? error.message : String(error)}`,
+          content: `OpenRouter execution failed: ${errorMsg}`,
           metadata: { category, tier: route.tier, department: deptId, agent: agent.id },
         };
       }
@@ -322,7 +382,16 @@ export class Orchestrator {
         },
         customId: taskId,
       });
+      this.events.emit(createEvent('memory.store', { component: 'memory' }, {
+        containerTag,
+        success: true,
+      }, taskId));
     } catch (error) {
+      this.events.emit(createEvent('memory.store', { component: 'memory' }, {
+        containerTag,
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      }, taskId));
       // Don't fail the task if memory storage fails
       if (this.verbose) {
         console.error(`[orchestrator] Failed to store result in supermemory:`, error);
