@@ -127,16 +127,21 @@ export function classifyTask(prompt: string): TaskCategory {
 
   // Writing
   if (lower.includes('draft') || lower.includes('write email') || lower.includes('compose')) return 'draft';
-  if (lower.includes('review') || lower.includes('audit') || lower.includes('check')) return 'review';
   if (lower.includes('summarize') || lower.includes('tldr') || lower.includes('key points')) return 'summarize';
+
+  // Analysis and research — route to FREE, not top. These are structured tasks
+  // that free models handle well. Only escalate to top for true multi-step reasoning.
+  if (lower.includes('analyze') || lower.includes('compare') || lower.includes('list') ||
+      lower.includes('describe') || lower.includes('explain') || lower.includes('report')) return 'summarize';
   if (lower.includes('research') || lower.includes('investigate') || lower.includes('find out')) return 'research';
+  if (lower.includes('review') || lower.includes('audit') || lower.includes('check')) return 'review';
 
-  // Complex reasoning
-  if (lower.includes('analyze') || lower.includes('compare') || lower.includes('strategy') ||
-      lower.includes('trade-off') || lower.includes('decision')) return 'reason';
+  // Complex reasoning — ONLY for true multi-step strategy/decision tasks
+  if (lower.includes('strategy') && lower.includes('trade-off')) return 'reason';
+  if (lower.includes('decision') && (lower.includes('weigh') || lower.includes('pros and cons'))) return 'reason';
 
-  // Default: if long prompt, likely complex
-  return wordCount > 200 ? 'reason' : 'summarize';
+  // Default: bias toward free. Only use top tier if explicitly complex.
+  return wordCount > 300 ? 'research' : 'summarize';
 }
 
 /**
