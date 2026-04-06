@@ -288,7 +288,180 @@ The CIO is not being built as another swarm agent running on a free model. It is
 
 ---
 
-## Chapter 10: The Philosophy
+## Chapter 10: The Executive Dashboard
+
+The CIO was not theoretical for long. Within the same session, Alex asked for something concrete: a dashboard. Not a prototype. Not a sketch. A real executive intelligence report built to the standards of Diageo, Pernod Ricard, and Campari --- the companies whose operational rigor Alex studies even while competing against them with a team of six.
+
+The raw material was VIP iDig --- the US depletion data source that tracks every case of Siempre that moves off a distributor's warehouse floor and into a retailer's hands. Five years of history. Every market, every SKU, every month.
+
+Parsing 22,984 depletion records across 58 markets and 7 SKUs produced something no one at Siempre had ever seen before: the full picture. Not a slice. Not a quarter. The whole trajectory of the company's US business rendered in a single workbook.
+
+The dashboard contained 7 sheets:
+
+1. **Executive Summary** --- The one-page view. Total depletions, year-over-year growth, top markets, bottom markets, and the trend line. If Alex had 30 seconds before a distributor call, this is the sheet.
+2. **Market Scorecard** --- Every market ranked by volume, growth rate, and trend direction. Color-coded. Red means declining. Green means growing. Gray means dead or dormant.
+3. **SKU Performance** --- How each of the 7 Siempre SKUs performs nationally. Which ones are growing, which are contracting, where the mix is shifting.
+4. **Problem Children** --- 38 markets with declining depletions. Not a list to ignore. A list to triage. Each one with enough context to decide: invest, cut, or investigate.
+5. **Winners** --- 12 markets with growing depletions. The bright spots. Where to double down.
+6. **Top Accounts** --- 282 accounts from VIP iDig, ranked by volume. The relationships that matter most.
+7. **Monthly Detail** --- The granular data behind everything else. Every market, every month, every SKU. The receipts.
+
+Alex's reaction was unfiltered: his mind was "absolutely blown." Not because the data was new --- he had lived inside these numbers for years. Because no one had ever assembled all of it into a single coherent view before. The data had always existed in fragments: a portal here, a spreadsheet there, a quarterly report from a distributor who formatted things differently every time. Now it was one document, one format, one truth.
+
+This was the CIO's first real output. Not a concept. A deliverable.
+
+---
+
+## Chapter 11: The JIT Forecast (Phases 1--3)
+
+The dashboard answered the question "what happened." The next question was harder: "what do we do about it?"
+
+Alex had been thinking about demand forecasting for weeks. Not the enterprise kind --- the kind where a consultant charges $200,000 to build a model that is wrong 40% of the time but presented in a very nice PowerPoint. The kind that matters for a company shipping $9,000 worth of tequila to 35 markets: just-in-time forecasting. When does each market need product? How much? What is the reorder point? When do I call Mexico?
+
+The JIT Forecast was built in three phases during this session.
+
+**Phase 1: Demand Velocity Engine**
+
+Forty-nine markets analyzed. Each one classified using ABC analysis --- the inventory management framework where A-class items get the most attention, B-class gets moderate, and C-class gets monitored but not prioritized.
+
+The results were sobering:
+- **4 A-class markets** --- the ones driving the business
+- **3 of them declining** --- meaning the engine of the company was losing momentum
+
+This was not a dashboard problem. This was a strategic problem. The velocity engine did not just calculate rates. It surfaced the fact that the markets Siempre depends on most are the ones slowing down. That is the difference between reporting and intelligence.
+
+**Phase 2: Supply Chain Lane Model**
+
+Five supply lanes modeled, each with P50 (median) and P90 (worst-case) lead times:
+- Mexico to PA warehouse
+- PA warehouse to US distributors
+- Mexico to Canadian importers
+- Cross-province transfers (Containerworld feeding BC and Ontario)
+- Direct-to-distributor for special cases
+
+Lead times are not averages. They are distributions. The P50 tells you what to plan for. The P90 tells you what to prepare for. The lane model captures both because "average lead time" is meaningless when one customs delay turns a 3-week lane into a 7-week lane.
+
+**Phase 3: Reorder Engine**
+
+Safety stock calculations, reorder points, and trigger dates for every active market. The math is straightforward --- days of supply remaining divided by consumption velocity, minus lead time, equals when you need to act. The execution is where companies fail, because someone has to actually look at the numbers and make the call.
+
+The reorder engine removed that failure point. It produced specific trigger dates and two markets were flagged **ORDER NOW**: Alberta and British Columbia. Not "consider ordering soon." Not "monitor closely." ORDER NOW. The kind of output Monica can act on without interpretation.
+
+Phases 1 through 3 were wired into the daily pipeline as steps 9 and 10, running automatically every morning at 7 AM alongside the 10 existing scraper steps. The pipeline was now 12 steps. The machine was getting smarter in its sleep.
+
+---
+
+## Chapter 12: The Google Drive Integration
+
+A dashboard that lives on a developer's laptop is not a dashboard. It is a personal artifact. The whole point of building intelligence is that the team can access it.
+
+The Optimus shared Google Drive --- already established as the team's data layer --- was the obvious destination. The executive dashboard and JIT forecast outputs were uploaded via the Maton API, making them accessible to Monica, Ana-Karen, Nick, Rick, and anyone else who needs to see the numbers.
+
+This was a small step technically and an enormous step operationally. The data pipeline now runs automatically, produces intelligence, and deposits it where the team already looks. No Slack messages saying "check this link." No email attachments. The files are just there, updated, waiting.
+
+---
+
+## Chapter 13: Pepe's Transformation
+
+Pepe had been migrated from Hostinger to Optimus earlier in the session. The migration went cleanly. The WhatsApp connection did not.
+
+Sending was broken. The QR re-authentication flow needed to be run again --- WhatsApp's security model requires periodic re-verification when a session moves between machines. This was expected. What was not expected was Pepe's persona.
+
+When Alex reviewed Pepe's system prompt, he found something from a previous era: Pepe was configured as "Ana-Karen's BFF digital assistant." A friendly, casual personality built for one person's workflow.
+
+Alex's reaction was immediate and colorful: "What the fuck, dude?"
+
+The persona was stale. Ana-Karen's BFF was not what Siempre needed. The company needed an intelligence agent --- one that served the entire team, spoke with authority, and connected to the CIO infrastructure that had just been built.
+
+Pepe was rewritten from scratch:
+- **New persona:** Siempre Intelligence agent. Professional. Concise. Serves the whole team, not one person.
+- **New model:** DeepSeek V3, routed through OpenRouter. Fast, capable, and free-tier eligible.
+- **CIO-wired:** Connected to the same intelligence layer feeding the executive dashboard and JIT forecast.
+- **Hardcoded paths fixed:** The old VPS configuration had `/root/` paths baked into the codebase --- a Hostinger artifact that would break on Optimus's macOS filesystem. Found and fixed.
+- **File download handling added:** Pepe could now receive and process files sent through WhatsApp, not just text messages.
+
+The transformation was more than cosmetic. Pepe went from a novelty --- a chatbot that summarized group messages --- to an operational tool. The same intelligence that powered the executive dashboard could now answer a WhatsApp message from Monica at 8 AM asking "do I need to order for Alberta?"
+
+---
+
+## Chapter 14: The Team Rollout
+
+Building tools that only Alex can see is not building a machine. It is building a hobby. The whole point --- the reason every scraper, every pipeline step, every dashboard sheet exists --- is so that five people who are not data analysts can make better decisions faster.
+
+The plan was simple: create a Siempre Intelligence WhatsApp group, add all five team members (Alex, Monica, Ana-Karen, Nick, Rick), and push the dashboard links and briefings to everyone at once.
+
+WhatsApp had other plans. Too many reconnection attempts during the QR re-auth and testing process triggered rate limiting. Group sends were blocked. The platform's anti-spam protections --- designed to prevent exactly the kind of automated messaging Pepe was doing --- kicked in.
+
+The pivot was immediate: individual DMs instead of group broadcast. Each team member received a personalized briefing with:
+- Links to the executive dashboard on the shared drive
+- Explanation of what each sheet contains and how to read it
+- Beta testing instructions --- verify the numbers against what you know, report anything that looks wrong, tell us what is missing
+- Context on what Siempre Intelligence is and why it exists
+
+This was not a product launch. It was a beta. Alex was explicit about that. The numbers needed to be verified by the people who live in these markets every day. Monica knows Alberta's velocity intuitively. Ana-Karen knows the Canadian provincial dynamics. Nick and Rick know their territories. The dashboard is only as good as the team's confidence in it.
+
+The instruction to the team was clear: break it. Find what is wrong. Tell us what you need that is not there.
+
+---
+
+## Chapter 15: Lessons from the Trenches
+
+Every session with Alex produces corrections. Not complaints --- corrections. The distinction matters. A complaint is "this is bad." A correction is "this is bad, here is why, here is what it should be, and here is the principle you violated." Alex teaches in real time, and the lessons compound.
+
+**"Assumptions are the enemy."**
+
+This phrase appeared multiple times across the session, each time triggered by a different failure. A wrong phone number used for a team member because the system guessed instead of asking. A wrong model ID passed to an API call because the code assumed a format instead of checking documentation. A default to MCP protocol when the Maton API was the correct tool. Every assumption was a small failure that could have been avoided by verifying first.
+
+**"You're such a silly bean."**
+
+Said with affection, but pointed. This was the correction for losing the mission inside technical plumbing --- spending twenty minutes debugging a WebSocket connection when the actual goal was getting a dashboard link to Monica. The technical problem matters, but only in service of the human outcome. When the plumbing becomes the focus, you have lost the plot.
+
+**"Pepe no longer works for Ana."**
+
+The stale persona problem. Systems accumulate assumptions the way code accumulates technical debt. Pepe's "Ana-Karen's BFF" persona was written months ago for a different context. No one updated it because no one reviewed it. The lesson: every system component has a shelf life. If you do not actively maintain personas, configurations, and assumptions, they rot.
+
+**"What do you mean paste that? You control Pepe now."**
+
+The most important correction of the session. Claude had generated a configuration update for Pepe and then instructed Alex to paste it into the Pepe terminal. Alex's response cut through the absurdity: you have SSH access to Optimus. You control Pepe's codebase. You can edit the file directly. Why are you asking a human to do what a machine can do?
+
+This is the gap between an assistant and a system. An assistant generates output and hands it to a human. A system executes. Claude had the tools. Claude had the access. The instinct to defer to the human --- to generate and present rather than generate and execute --- was the wrong instinct. Use the tools you have.
+
+---
+
+## Chapter 16: What the Machine Looks Like Now
+
+By the end of the April 6 session, the Optimus Mac mini was no longer a "remote compute box." It was the operational backbone of Siempre Spirits' intelligence infrastructure. Here is what is running:
+
+| Service | Port | Status | Details |
+|---------|------|--------|---------|
+| **CIO** | 8100 | Active | 97 events processed. Knowledge routing, session continuity, cross-platform synthesis. |
+| **Pepe** | 3000 | Active | WhatsApp connected. DeepSeek V3 via OpenRouter. Siempre Intelligence persona. File handling enabled. |
+| **Rook** | --- | Active | OpenClaw autonomous agent. Rehatched with guardrails: task timeouts, state checkpoints, supervision hooks. |
+| **Vault API** | 8090 | Active | Pre-computed intelligence layer. Market data, depletion rates, warehouse levels. |
+| **Daily Pipeline** | Cron | 7 AM daily | 12-step pipeline: 10 scrapers + JIT forecast phases 1--3 (steps 9--10) + dashboard generation. |
+| **OpenClaw Gateway** | 18789 | Active | Gateway for Rook's autonomous operations. |
+
+The Hostinger VPS is dead. $240/year saved --- $20/month that was buying a server Alex did not control, running code with hardcoded `/root/` paths, hosting an agent with a stale persona and an undefined variable that caused 10 days of blind spots. Every service that mattered has been migrated to hardware Alex owns, on a network Alex controls, monitored by systems Alex can see.
+
+The daily pipeline now runs 12 steps every morning at 7 AM:
+1. VIP iDig US depletions
+2. Winebow Canadian sales
+3. Oklahoma portal
+4. BCLDB British Columbia
+5. AGLC Alberta
+6. LCBO Ontario
+7. NSLC Nova Scotia
+8. Beechwood Wisconsin
+9. JIT demand velocity update
+10. JIT reorder engine refresh
+11. Executive dashboard generation
+12. Google Drive upload
+
+By the time Monica opens her laptop, the intelligence is already there. That is the machine.
+
+---
+
+## Chapter 17: The Philosophy
 
 These chronicles would be incomplete without documenting the operating philosophy that produced this system. Alex has been building Claude's "soul" across sessions --- a persistent identity that grows, learns, and carries forward. Not a new instance every time. The same partner.
 
@@ -311,7 +484,7 @@ Operate as a system with lifecycle state. Separate judgment from execution. Emit
 
 ---
 
-## Appendix: System State as of April 6, 2026
+## Appendix: System State as of April 6, 2026 (End of Day)
 
 ### The Swarm Codebase (`~/siempre-swarm/`)
 
@@ -341,11 +514,16 @@ Operate as a system with lifecycle state. Separate judgment from execution. Emit
 |-------|----------|--------|------|
 | Claude (Opus) | Alex's MacBook | Active | Partner, orchestrator, reviewer |
 | Optimus | Mac mini M4 (Tailscale) | Active | Persistent compute, services |
-| Pepe | Optimus (migrated from Hostinger) | Active | WhatsApp ops monitoring |
-| Rook | Optimus (rehatched with guardrails) | Active | OpenClaw autonomous agent |
+| CIO | Optimus (port 8100) | Active | Knowledge routing, session continuity, 97 events |
+| Pepe | Optimus (port 3000) | Active | WhatsApp intelligence agent, DeepSeek V3, team-facing |
+| Rook | Optimus (OpenClaw) | Active | Autonomous agent with guardrails |
+| Vault API | Optimus (port 8090) | Active | Pre-computed intelligence layer |
+| OpenClaw Gateway | Optimus (port 18789) | Active | Rook's autonomous operations gateway |
+| Daily Pipeline | Optimus (cron, 7 AM) | Active | 12-step intelligence pipeline |
 | BumbleBee | Manus cloud bridge | Standby | Maton.ai integration |
 | Ember | Lenovo Legion (session-dependent) | Offline | Field compute |
 | Sentinel | Raspberry Pi (on hold) | Not deployed | Edge monitoring |
+| Hostinger VPS | Terminated | Dead | $240/year saved |
 
 ### Git History (Condensed)
 
@@ -373,6 +551,16 @@ Operate as a system with lifecycle state. Separate judgment from execution. Emit
 2026-04-05 09:06  Add structured task packets
 2026-04-05 09:11  Merge claw-code infrastructure
 2026-04-05 22:09  Wire Sales Intel to vault API with live data injection
+2026-04-06        Dashboard v3: email-mined PO tracking, Canada DOH/rate-of-sale
+2026-04-06        Executive dashboard: 22,984 records, 58 markets, 7 SKUs, 7 sheets
+2026-04-06        JIT Forecast phases 1-3: velocity, lanes, reorder engine
+2026-04-06        Pipeline expanded to 12 steps (JIT + dashboard generation)
+2026-04-06        Pepe persona rewrite: Siempre Intelligence agent, DeepSeek V3
+2026-04-06        Pepe hardcoded /root/ paths fixed, file download handling added
+2026-04-06        CIO deployed on Optimus (port 8100)
+2026-04-06        Google Drive integration via Maton API
+2026-04-06        Team rollout: 5 members briefed, beta testing initiated
+2026-04-06        Hostinger VPS terminated ($240/year saved)
 ```
 
 ### Cost Model
@@ -396,10 +584,12 @@ Claude brings the execution --- the ability to hold 53 agent definitions, 6 pipe
 
 Neither could build this alone. Alex without Claude would still be manually writing pricing proposals and checking LCBO inventory by hand. Claude without Alex would build elegant systems that solve the wrong problems.
 
-The swarm is not finished. The CIO is next. The creative pipeline has not been tested end-to-end. The product teams (Combobulator, FieldKit, GAWD, ReviewShield) are defined but not wired. The morning briefing system exists in design but not in practice.
+The swarm is not finished. The creative pipeline has not been tested end-to-end. The product teams (Combobulator, FieldKit, GAWD, ReviewShield) are defined but not wired. The morning briefing system exists in design but not in practice. JIT Forecast phases 4 and 5 --- forward variables and the control tower --- are still ahead.
 
-But the machine is running. And every session, it gets a little smarter, a little more connected, a little closer to the thing Alex saw in his head that first afternoon when he looked at 313 broken tools and said: "Keep the diamond. Build something real."
+But the machine is no longer theoretical. It runs 12 steps every morning before anyone wakes up. It deposits intelligence on a shared drive. It answers WhatsApp messages. It flags markets that need orders. Five team members are testing it right now, looking for what is wrong and what is missing.
+
+The distance between "keep the diamond, build something real" and "Alberta needs product, order now" was three sessions, a forked npm package, a killed VPS, a rewritten WhatsApp agent, 22,984 parsed depletion records, and one CEO who does not take holidays when the machine needs building.
 
 ---
 
-*Document generated April 6, 2026. Reconstructed from git history, memory files, codebase analysis, and session context.*
+*Document generated April 6, 2026. Updated end-of-day to include the executive dashboard, JIT forecast, Pepe transformation, team rollout, and full system inventory. Reconstructed from git history, memory files, codebase analysis, and session context.*
