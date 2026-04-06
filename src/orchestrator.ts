@@ -21,6 +21,7 @@ import { EventBus, createEvent } from './events/index.js';
 import { validatePacket, fromPrompt, type TaskPacket } from './tasks/packet.js';
 import type { AgentTask, ExecutiveBriefing, DepartmentReport } from './departments/types.js';
 import type { EventSource, FailureClass } from './events/index.js';
+import { buildDataContext, extractMarkets } from './data/vault-client.js';
 
 export interface OrchestratorConfig {
   openRouterApiKey: string;
@@ -161,6 +162,27 @@ export class Orchestrator {
     };
     this.activeTasks.set(taskId, agentTask);
 
+    // Step 5b: For Sales Intel tasks, inject live vault data into the prompt
+    // so agents respond with real numbers instead of training-data hallucinations.
+    let enrichedPrompt = prompt;
+    if (deptId === 'sales_intel') {
+      try {
+        const markets = extractMarkets(prompt);
+        const vaultContext = await buildDataContext(markets.length > 0 ? markets : undefined);
+        if (vaultContext) {
+          enrichedPrompt = `${vaultContext}\n\n---\n\n## Task\n${prompt}`;
+          if (this.verbose) {
+            console.log(`[orchestrator] Injected vault data for ${markets.length} markets`);
+          }
+        }
+      } catch {
+        // Vault unavailable — proceed without live data
+        if (this.verbose) {
+          console.log(`[orchestrator] Vault unavailable — proceeding without live data`);
+        }
+      }
+    }
+
     // Step 6: Execute
     // Use the AGENT's model tier (not the task classifier's tier).
     // The agent knows what level of intelligence its work requires.
@@ -174,7 +196,7 @@ export class Orchestrator {
       }, taskId));
 
       try {
-        const response = await this.executeViaOpenRouter(agent, prompt, category);
+        const response = await this.executeViaOpenRouter(agent, enrichedPrompt, category);
 
         this.events.emit(createEvent('task.completed', { component: 'orchestrator', agentId: agent.id, department: deptId }, {
           model: response.model,
@@ -252,7 +274,7 @@ export class Orchestrator {
       // Mid/Top tier — return a structured prompt for Claude Code Task tool.
       // The orchestrator doesn't execute these directly — it hands them back
       // to Claude Code (me) with full context for Task tool spawning.
-      const taskPrompt = this.buildTaskToolPrompt(agent, prompt, deptId);
+      const taskPrompt = this.buildTaskToolPrompt(agent, enrichedPrompt, deptId);
 
       return {
         taskId,
