@@ -166,18 +166,33 @@ export function scoreMarketHealth(code: string, input: HealthInput): {
     spendPerCase: grade === 'A' ? scoreFactorSpendPerCase(input.spendPerCase) : null,
   };
 
-  // Count GREEN factors
+  // Count factors by color (only factors with data)
   const allFactors = Object.values(factors).filter((v): v is HealthColor => v !== null);
   const greenCount = allFactors.filter(v => v === 'GREEN').length;
+  const redCount = allFactors.filter(v => v === 'RED').length;
+  const availableCount = allFactors.length;
 
   let health: HealthColor;
 
-  if (grade === 'A') {
-    // 5-factor: >=5 GREEN = GREEN, >=3 = YELLOW, else RED
-    health = greenCount >= 5 ? 'GREEN' : greenCount >= 3 ? 'YELLOW' : 'RED';
+  if (availableCount === 0) {
+    // No data at all
+    health = 'RED';
+  } else if (grade === 'A') {
+    if (availableCount >= 4) {
+      // Full or near-full data: use absolute thresholds
+      health = greenCount >= 5 ? 'GREEN' : greenCount >= 3 ? 'YELLOW' : 'RED';
+    } else {
+      // Partial data: use proportion (all available GREEN = GREEN, majority RED = RED)
+      health = redCount === 0 ? 'GREEN' : greenCount > redCount ? 'YELLOW' : 'RED';
+    }
   } else if (grade === 'B') {
-    // 3-factor: >=3 GREEN = GREEN, >=2 = YELLOW, else RED
-    health = greenCount >= 3 ? 'GREEN' : greenCount >= 2 ? 'YELLOW' : 'RED';
+    if (availableCount >= 2) {
+      health = greenCount >= 3 ? 'GREEN' : greenCount >= 2 ? 'YELLOW' : 'RED';
+      // Partial data override: if only 1-2 factors and all GREEN, don't penalize
+      if (availableCount < 3 && redCount === 0) health = 'GREEN';
+    } else {
+      health = allFactors[0] || 'RED';
+    }
   } else {
     // C markets: just pctToTarget
     health = factors.pctToTarget || 'RED';
