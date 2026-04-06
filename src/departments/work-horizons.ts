@@ -120,6 +120,11 @@ export const AGENT_STRATA: Record<string, { stratum: Stratum; role: string; rati
     role: 'Chief Intelligence Officer',
     rationale: 'Synthesizes across 6 data sources to produce strategic intelligence. A trend in VIP data combined with a Prestige shipment anomaly plus a provincial listing change = strategic signal. Needs Opus for cross-system pattern recognition.',
   },
+  sales_director: {
+    stratum: 'IV',
+    role: 'National Sales Director',
+    rationale: 'Holds 55 markets in parallel. A distributor failure in GA combined with a pipeline build in FL combined with a listing cycle in VA = strategic resource allocation. Cross-market pattern recognition requires Opus.',
+  },
 
   // ═══════════════════════════════════════════════
   // STRATUM III — Directors/Managers (Sonnet/Mid)
@@ -205,6 +210,22 @@ export const AGENT_STRATA: Record<string, { stratum: Stratum; role: string; rati
   pricing_ok: { stratum: 'I', role: 'Oklahoma State Agent', rationale: 'Same.' },
   pricing_co: { stratum: 'I', role: 'Colorado State Agent', rationale: 'Same.' },
   pricing_az: { stratum: 'I', role: 'Arizona State Agent', rationale: 'Same.' },
+
+  // Sales market agents — all Stratum I (55 agents)
+  // They analyze their market using dossier + foundation. No cross-market judgment.
+  // The dossier IS the context. Synthesis happens at Sales Director level.
+  // NOTE: All 55 sales_XX agents are Stratum I. Only key markets listed explicitly;
+  // unlisted agents default to Stratum I / free via getAgentModelTier() fallback.
+  sales_ca: { stratum: 'I', role: 'California Market Manager', rationale: 'Executes market analysis using dossier. Largest market (6,288 cases 6yr). Dossier provides all context.' },
+  sales_tx: { stratum: 'I', role: 'Texas Market Manager', rationale: 'Same — multi-distributor market, dossier-driven analysis.' },
+  sales_ga: { stratum: 'I', role: 'Georgia Market Manager', rationale: 'Same — 81% YoY decline requires focused dossier-based diagnosis.' },
+  sales_on: { stratum: 'I', role: 'Ontario Market Manager', rationale: 'Same — LCBO dynamics are in dossier. Provincial rules injected.' },
+  sales_co: { stratum: 'I', role: 'Colorado Market Manager', rationale: 'Same — fresh distributor transition context in dossier.' },
+  sales_fl: { stratum: 'I', role: 'Florida Market Manager', rationale: 'Same — split-territory dynamics in dossier.' },
+  sales_wa: { stratum: 'I', role: 'Washington Market Manager', rationale: 'Same — execution gap analysis from dossier data.' },
+  sales_il: { stratum: 'I', role: 'Illinois Market Manager', rationale: 'Same — BBG restructuring context in dossier.' },
+  // Remaining 47 market agents (Tier 2 + Phase 3) all follow same Stratum I pattern.
+  // getAgentModelTier() returns 'free' for any unlisted agent ID — correct behavior.
 
   // Sales Intel source agents — Stratum I
   // They extract data from a specific source. No synthesis.

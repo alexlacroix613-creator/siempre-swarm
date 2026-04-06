@@ -7,6 +7,7 @@
 
 import type { Department, AgentRole, DepartmentId } from './types.js';
 import { designSwarmDepartment } from './design-swarm.js';
+import { salesDepartment } from './sales-department.js';
 
 // ============================================================================
 // 1. PRICING DEPARTMENT
@@ -127,7 +128,7 @@ const salesIntelDepartment: Department = {
       systemPrompt: `You specialize in Winebow DiverPort data for Siempre Spirits, focusing on California and regional distribution. You know how to read DiverPort reports, track on/off-premise splits, and analyze account-level performance. Report findings to the Intel Director.`,
     },
   ],
-  routingKeywords: ['sales', 'depletion', 'inventory', 'vip', 'idig', 'prestige', 'nwow', 'shipment', 'revenue', 'oklahoma', 'canada', 'provincial', 'winebow', 'diverport', 'cases', 'distribution'],
+  routingKeywords: ['sales data', 'depletion', 'inventory', 'vip', 'idig', 'prestige', 'nwow', 'shipment', 'revenue', 'pull data', 'data pull', 'provincial', 'diverport', 'cases sold', 'market briefing'],
   defaultModelTier: 'free',
 };
 
@@ -378,6 +379,7 @@ const devopsDepartment: Department = {
 export const DEPARTMENTS: Record<DepartmentId, Department> = {
   pricing: pricingDepartment,
   sales_intel: salesIntelDepartment,
+  sales: salesDepartment,
   research: researchDepartment,
   creative: designSwarmDepartment as any,  // Design Swarm replaces basic Creative dept
   comms: commsDepartment,
