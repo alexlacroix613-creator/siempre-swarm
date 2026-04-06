@@ -5,7 +5,7 @@
  * memory namespaces, and routing rules.
  */
 
-export type DepartmentId = 'pricing' | 'sales_intel' | 'research' | 'creative' | 'comms' | 'devops';
+export type DepartmentId = 'pricing' | 'sales_intel' | 'sales' | 'research' | 'creative' | 'comms' | 'devops';
 
 export interface Department {
   id: DepartmentId;
