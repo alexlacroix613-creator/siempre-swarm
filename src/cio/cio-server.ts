@@ -27,7 +27,7 @@ const PORT = parseInt(process.env.CIO_PORT || '8100');
 const DB_DIR = join(homedir(), '.siempre-swarm');
 const DB_PATH = join(DB_DIR, 'cio.db');
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '';
-const OPUS_MODEL = 'anthropic/claude-opus-4-20250514';
+const OPUS_MODEL = 'anthropic/claude-opus-4';
 const MEMORY_DIR = join(homedir(), '.claude/projects/-Users-alexl/memory');
 
 // ─── Database ─────────────────────────────────
