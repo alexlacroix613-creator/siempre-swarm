@@ -140,7 +140,59 @@
 - IR focus team (3 reps) handles package/retail volume (core Siempre revenue driver)
 
 ### Recent Interactions & Relationship Health
-**March 2026 Pricing Negotiation (Critical Incident):**
+
+**CURRENT PROGRAM — The Agave Program 2026 (ACTIVE as of April 1)**
+- **Program:** 16-week Agave Program run by UDIGA
+- **Approved:** March 13, 2026 — Winfred Westbrook sent supplier letter, Alex approved same day ("We love it. Let's get back on the radar!")
+- **Duration:** April 1 – ~July 22, 2026 (16 weeks)
+- **Status:** LIVE — Siempre is back on the program
+- **Attachment:** "The Agave Program - Supplier Letter - 2026.docx" (on file)
+
+**NEW PRICING — Confirmed March 18-19, Effective April 1**
+- **Negotiated by:** David Benson (UDIGA Spirits Trading/Pricing)
+- **Confirmed by:** Alex Lacroix (March 19)
+
+| SKU | Channel | Deal Level | Price |
+|-----|---------|-----------|-------|
+| **Plata** | On-Premise | Full List | $35.99 |
+| **Plata** | On-Premise | Btl 1 | $28.99 |
+| **Plata** | On-Premise | Cocktail | $26.99 |
+| **Plata** | On-Premise | MNGR Deal | $25.99 |
+| **Plata** | Off-Premise | 1 case | $34.38 |
+| **Plata** | Off-Premise | 3 case | $31.99 |
+| **Reposado** | On-Premise | Full List | $43.99 |
+| **Reposado** | On-Premise | Btl 1 | $33.99 |
+| **Reposado** | On-Premise | Cocktail | $30.99 |
+| **Reposado** | On-Premise | MNGR Deal | $28.99 |
+| **Reposado** | Off-Premise | 1 case | $41.59 |
+| **Reposado** | Off-Premise | 3 case | $35.99 |
+
+**APPROVED PROMOTIONS — April–May 2026 (100% on Siempre)**
+
+Off-Premise:
+- Buy 3 cases, get 2 bottles free
+- Buy 5 cases, get 1 case free
+
+On-Premise:
+- Printed spirit list/cocktail menu bonus: buy 1 case, get 1 bottle free
+
+**Note from Alex:** "The pricing was built for those prices/deal levels *or* free goods (one or the other) permanent. BUT, let's regain some distro, and get after it. Approved to run the [free goods] for April-May."
+
+**UDIGA Margins (confirmed):**
+- United Reposado margins across deal levels: 39.6%, 36.1%, 28.0%, 27.7%, 26.7%, 28.0%, 27.0%
+- United Plata margins across deal levels: 35.4%, 32.4%, 28.0%, 28.1%, 26.0%, 30.0%, 27.0%
+
+**KEY CONTACTS FOR THIS PROGRAM:**
+- David Benson (Pricing): dbenson@udiga.com
+- Justin Israel (Sales Manager): jisrael@udiga.com
+- Winfred Westbrook (GM Craft Spirits): wwestbrook@udiga.com
+- Jenny Brown: jbrown@udiga.com (CC'd on pricing confirmation)
+
+**Alex requested (March 19):** "Justin, do you think I could get in front of the broader team in late this month or first thing April to talk about the pricing and a refresh?" — STATUS: Pending confirmation from Justin.
+
+---
+
+**PRIOR: March 2026 Pricing Negotiation (Resolved):**
 - **Issue:** Free goods (no-charge) Plata delivery to support distributor event/promotion
 - **Alex Lacroix Proposal:** Ship free goods, bill through distributor billback (3-tier compliant structure previously used in GA)
 - **Justin Ashton (PBG Legal/Compliance) Response:** "Based on our interpretation of the 3-tiered system and transacting with distributors, this method is not legally compliant and one we have never and will not transact against."
