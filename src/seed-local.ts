@@ -37,6 +37,13 @@ const entries = [
   // Sales Intel
   { namespace: 'dept_sales_intel', content: 'Data sources: VIP iDig (US depletions), Winebow DiverPort (CA/regional), Oklahoma state portal, Canadian provincial portals (LCBO, SAQ, BCLDB), Prestige NWOW (shipments/revenue via email), Zoho Books (invoicing).', importance: 1.0 },
 
+  // Sales Department (National AI Sales Force)
+  { namespace: 'dept_sales', content: 'National AI Sales Force: 55 market agents (1 per state/province) + Sales Director. Tier 1 (8): CA, TX, CO, WA, OR, FL, IL, ON. Tier 2 (12): KS, OK, TN, GA, AR, MO, VA, UT, AB, SK, MB, BC. Phase 3 (35): regulatory shells only. Each agent loads foundation.md + market dossier. COMMS FIREWALL: zero external contact authority at every level.', importance: 1.0 },
+  { namespace: 'dept_sales', content: 'Weekly scorecard: 11 KPIs (depletions 20%, new PODs 12%, menu wins 10%, displays 10%, price compliance 10%, ride-withs 8%, account calls 8%, chain follow-ups 7%, issues closed 5%, forecast accuracy 5%, trade spend 5%). A markets: 5-factor scoring. B markets: 3-factor. C markets: 1-factor + dark alert.', importance: 0.9 },
+  { namespace: 'dept_sales', content: 'COMMS FIREWALL: Market agents → Sales Director → Solace → Alex/Nick/Rick/Monica/Anna. NO agent contacts anyone outside @siempretequila.com. External contact recommendations use format: RECOMMENDED ACTION: [who] [what] [why]. This is permanent until Alex explicitly changes it.', importance: 1.0 },
+  { namespace: 'dept_sales', content: 'Market diagnosis principles: (1) Name the distributor, not the state. (2) Lead with the number. (3) Diagnose, dont describe. (4) Use three-tier language. (5) End with a recommendation. Tone: smart VP of Sales emailing the CEO at 7am — direct, specific, actionable.', importance: 0.9 },
+  { namespace: 'dept_sales', content: 'Key flags as of April 2026: Georgia -81% YoY (UDIGA execution gap). Tennessee -81% YoY (franchise-flagged, ADC). Missouri transitioning Smart → Vintegrity Apr 9 go-live. Ontario: Analyticsmart access revoked. Oklahoma: iDig incomplete, use Dive/Optimus. 38 of 52 domestic markets declining YoY.', importance: 0.9 },
+
   // Research
   { namespace: 'dept_research', content: 'CONTEXT ISOLATION RULE: Siempre business research must NEVER bleed into tech/startup research. Each research agent has its own namespace. Cross-pollination only through R&D Director with explicit labeling.', importance: 1.0 },
   { namespace: 'project_combobulator', content: 'Combobulator: investor reporting SaaS at combobulator.tech. React+Vite+Netlify. Demo: Lone Peak Distillers. Features: reports, Bob AI, i18n, cap table, P&L. Pricing: $99/$249. Raise is active.', importance: 0.8 },

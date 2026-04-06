@@ -56,6 +56,7 @@ export interface ProfileResult {
  *
  * dept_pricing          — Pricing department shared memory
  * dept_sales_intel      — Sales intelligence department
+ * dept_sales            — National Sales Force department (55 market agents)
  * dept_research         — R&D department
  * dept_creative         — Creative department (Thanks Tim)
  * dept_comms            — Communications department
@@ -65,6 +66,9 @@ export interface ProfileResult {
  * agent_tennessee       — Tennessee state pricing agent
  * agent_vip_idig        — VIP iDig sales data agent
  * agent_oklahoma        — Oklahoma portal agent
+ * agent_sales_ga        — Georgia market manager agent
+ * agent_sales_ca        — California market manager agent
+ * (... 55 market agents total, pattern: agent_sales_{state_code})
  *
  * shared_siempre        — Cross-department shared context
  * user_alex             — Alex's preferences, communication style, decisions
