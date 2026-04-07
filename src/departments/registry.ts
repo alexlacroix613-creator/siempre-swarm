@@ -8,6 +8,7 @@
 import type { Department, AgentRole, DepartmentId } from './types.js';
 import { designSwarmDepartment } from './design-swarm.js';
 import { salesDepartment } from './sales-department.js';
+import { mexicoOpsDepartment } from './mexico-ops.js';
 
 // ============================================================================
 // 1. PRICING DEPARTMENT
@@ -384,10 +385,15 @@ export const DEPARTMENTS: Record<DepartmentId, Department> = {
   creative: designSwarmDepartment as any,  // Design Swarm replaces basic Creative dept
   comms: commsDepartment,
   devops: devopsDepartment,
+  mexico_ops: mexicoOpsDepartment,
 };
 
 /**
  * Find the best department for a task based on keywords in the prompt.
+ *
+ * Short keywords (≤3 chars) require word-boundary matching to prevent
+ * false positives (e.g., state code "ca" matching inside "case").
+ * Multi-word keywords score proportional to their word count.
  */
 export function routeToDepartment(prompt: string): DepartmentId | null {
   const lower = prompt.toLowerCase();
@@ -396,7 +402,15 @@ export function routeToDepartment(prompt: string): DepartmentId | null {
 
   for (const [id, dept] of Object.entries(DEPARTMENTS)) {
     const score = dept.routingKeywords.reduce((acc, keyword) => {
-      return acc + (lower.includes(keyword) ? keyword.split(' ').length : 0);
+      let found: boolean;
+      if (keyword.length <= 3) {
+        // Short keywords need word-boundary matching to avoid substring noise
+        const re = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+        found = re.test(lower);
+      } else {
+        found = lower.includes(keyword);
+      }
+      return acc + (found ? keyword.split(' ').length : 0);
     }, 0);
 
     if (score > bestScore) {
