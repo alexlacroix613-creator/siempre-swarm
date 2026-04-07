@@ -22,6 +22,7 @@ import { validatePacket, fromPrompt, type TaskPacket } from './tasks/packet.js';
 import type { AgentTask, ExecutiveBriefing, DepartmentReport } from './departments/types.js';
 import type { EventSource, FailureClass } from './events/index.js';
 import { buildDataContext, extractMarkets } from './data/vault-client.js';
+import { buildMexicoOpsAgentContext } from './departments/mexico-ops-data-bridge.js';
 
 export interface OrchestratorConfig {
   openRouterApiKey: string;
@@ -162,8 +163,8 @@ export class Orchestrator {
     };
     this.activeTasks.set(taskId, agentTask);
 
-    // Step 5b: For Sales Intel tasks, inject live vault data into the prompt
-    // so agents respond with real numbers instead of training-data hallucinations.
+    // Step 5b: Inject live data into prompts for data-driven departments.
+    // Agents respond with real numbers instead of training-data hallucinations.
     let enrichedPrompt = prompt;
     if (deptId === 'sales_intel') {
       try {
@@ -179,6 +180,20 @@ export class Orchestrator {
         // Vault unavailable — proceed without live data
         if (this.verbose) {
           console.log(`[orchestrator] Vault unavailable — proceeding without live data`);
+        }
+      }
+    } else if (deptId === 'mexico_ops') {
+      try {
+        const mexContext = await buildMexicoOpsAgentContext(agent.id);
+        if (mexContext) {
+          enrichedPrompt = `${mexContext}\n\n---\n\n## Task\n${prompt}`;
+          if (this.verbose) {
+            console.log(`[orchestrator] Injected Mexico Ops live data for ${agent.id}`);
+          }
+        }
+      } catch {
+        if (this.verbose) {
+          console.log(`[orchestrator] Mexico Ops data bridge unavailable — proceeding with static context`);
         }
       }
     }
