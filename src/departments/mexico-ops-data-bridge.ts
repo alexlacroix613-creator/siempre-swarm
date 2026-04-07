@@ -562,9 +562,76 @@ export async function buildFreightContext(): Promise<string> {
 }
 
 /**
+ * Build context for the Packaging Coordinator.
+ * Layers: Vendor map + component inventory alerts + go/no-go checklist
+ */
+export async function buildPackagingContext(): Promise<string> {
+  const sections: string[] = [];
+
+  // Vendor map (packaging-relevant sections)
+  const vendorRef = resolve(SWARM_ROOT, 'data/mexico-ops/vendor-map.md');
+  if (existsSync(vendorRef)) {
+    sections.push('# VENDOR REFERENCE');
+    sections.push(readFileSync(vendorRef, 'utf-8').slice(0, 5000));
+  }
+
+  // AK email: label/artwork threads
+  const labelEmails = await searchAKEmail('subject:label OR subject:artwork OR subject:proof', 3);
+  if (labelEmails.length > 0) {
+    sections.push('# RECENT LABEL/ARTWORK EMAILS');
+    for (const e of labelEmails) {
+      const subj = e.payload?.headers?.find(h => h.name === 'Subject')?.value || '(no subject)';
+      sections.push(`  ${subj}`);
+      if (e.snippet) sections.push(`  Preview: ${e.snippet.slice(0, 150)}`);
+    }
+  }
+
+  return sections.join('\n\n');
+}
+
+/**
+ * Build context for the CRT/Compliance agent.
+ * Layers: Compliance deadlines + CRT emails + export doc status
+ */
+export async function buildComplianceContext(): Promise<string> {
+  const { getComplianceDeadlines, ESCALATION_MATRIX } = await import('./mexico-ops-weekly-rhythm.js');
+  const sections: string[] = [];
+
+  // Compliance calendar
+  const deadlines = getComplianceDeadlines();
+  sections.push('# COMPLIANCE CALENDAR');
+  for (const d of deadlines) {
+    const flag = d.status === 'overdue' ? 'OVERDUE' : d.status === 'due_soon' ? 'DUE SOON' : 'upcoming';
+    sections.push(`  [${flag}] ${d.description} — due ${d.dueDate} (${d.owner}) ${d.automatable ? '[agent can prep]' : '[human only]'}`);
+  }
+
+  // CRT/compliance emails
+  const crtEmails = await searchAKEmail('from:crt.org.mx OR subject:CAET OR subject:certificado OR subject:COLA', 5);
+  if (crtEmails.length > 0) {
+    sections.push('\n# RECENT CRT/COMPLIANCE EMAILS');
+    for (const e of crtEmails) {
+      const subj = e.payload?.headers?.find(h => h.name === 'Subject')?.value || '(no subject)';
+      const from = e.payload?.headers?.find(h => h.name === 'From')?.value || '';
+      sections.push(`  ${from}: ${subj}`);
+    }
+  }
+
+  // Escalation matrix
+  sections.push('\n# ESCALATION MATRIX');
+  for (const rule of ESCALATION_MATRIX) {
+    sections.push(`  ${rule.blocker} → ${rule.firstContact} → ${rule.escalation} (SLA: ${rule.sla})`);
+  }
+
+  return sections.join('\n');
+}
+
+/**
  * Build context for the Director — cross-agent summary.
+ * Includes the weekly rhythm briefing appropriate for today.
  */
 export async function buildDirectorContext(): Promise<string> {
+  const { buildMondayBriefing, buildThursdayRiskReport, buildFridayReportCard, getComplianceDeadlines }
+    = await import('./mexico-ops-weekly-rhythm.js');
   const sections: string[] = [];
 
   // Full operational state
@@ -573,11 +640,28 @@ export async function buildDirectorContext(): Promise<string> {
     sections.push(readFileSync(opsRef, 'utf-8'));
   }
 
-  // Vendor map
-  const vendorRef = resolve(SWARM_ROOT, 'data/mexico-ops/vendor-map.md');
-  if (existsSync(vendorRef)) {
-    const content = readFileSync(vendorRef, 'utf-8');
-    sections.push(content.slice(0, 3000));
+  // Day-appropriate briefing
+  const day = new Date().getDay(); // 0=Sun, 1=Mon, ..., 5=Fri
+  try {
+    if (day === 1) {
+      sections.push(await buildMondayBriefing());
+    } else if (day === 4) {
+      sections.push(await buildThursdayRiskReport());
+    } else if (day === 5) {
+      sections.push(await buildFridayReportCard());
+    }
+  } catch {
+    // Briefing generation failed — proceed with static context
+  }
+
+  // Compliance deadlines always visible
+  const deadlines = getComplianceDeadlines();
+  const urgent = deadlines.filter(d => d.status !== 'upcoming' && d.status !== 'completed');
+  if (urgent.length > 0) {
+    sections.push('\n# URGENT COMPLIANCE DEADLINES');
+    for (const d of urgent) {
+      sections.push(`  [${d.status.toUpperCase()}] ${d.description} — ${d.dueDate} (${d.owner})`);
+    }
   }
 
   // Live FX
@@ -609,12 +693,19 @@ export async function buildMexicoOpsAgentContext(agentId: string): Promise<strin
       return buildBarrelContext();
     case 'mexico_freight_logistics':
       return buildFreightContext();
+    case 'mexico_packaging_coordinator':
+      return buildPackagingContext();
+    case 'mexico_crt_compliance':
+      return buildComplianceContext();
+    case 'mexico_warehouse_inventory':
+    case 'mexico_distillery_liaison':
     default:
-      // Other agents get the operational state reference
+      // These agents get the operational state + vendor map reference
       const opsRef = resolve(SWARM_ROOT, 'data/mexico-ops/operational-state.md');
-      if (existsSync(opsRef)) {
-        return readFileSync(opsRef, 'utf-8');
-      }
-      return '';
+      const vendorRef = resolve(SWARM_ROOT, 'data/mexico-ops/vendor-map.md');
+      const parts: string[] = [];
+      if (existsSync(opsRef)) parts.push(readFileSync(opsRef, 'utf-8'));
+      if (existsSync(vendorRef)) parts.push(readFileSync(vendorRef, 'utf-8').slice(0, 3000));
+      return parts.join('\n\n---\n\n');
   }
 }
