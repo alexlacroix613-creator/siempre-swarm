@@ -464,6 +464,9 @@ export const mexicoOpsDepartment: Department = {
     'chisme production', 'chisme bottling', 'supplier quote',
     'prestige shipment', 'lcbo shipment', 'albatrans', 'motiprint',
     'track shipment', 'shipment from mexico', 'shipment from altamira',
+    'enough labels', 'label status', 'labels for plata', 'labels for chisme',
+    'sergio cruz', 'distillery working', 'distillery status',
+    'go no go', 'bottling checklist', 'component inventory',
     // Single-word fallbacks (lower score but still match)
     'arandas', 'estiba', 'bottling', 'distillery', 'caet',
   ],
