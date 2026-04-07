@@ -74,22 +74,35 @@
 
 ## 3. Distribution Structure
 
+**LCBO Agent History (Critical Context — threads dropped at each transition):**
+
+| Period | Agent | Status |
+|--------|-------|--------|
+| Until ~Sep 2025 | **Noble Estates** (Craig De Blois, Linda Strysio) | Departed. Managed June 2025 stockout crisis. Left Reposado replenishment unresolved. |
+| ~Oct 2025 – ~Feb 2026 | **Rival** (Carolyn O'Grady-Gold) | Acquired by Dandurand. Never picked up Reposado reorder. Analyticsmart access revoked during M&A. Carolyn introduced Trajectory. |
+| **April 2026 → CURRENT** | **Trajectory** (via BevCollective) | NEW — launching now. Training call scheduled April 10/11, 9AM ET. Trajectory has samples in hand. Sales conference later in April. |
+
+**BevCollective (The Beverage Collective Corp.) — Coordinating Layer:**
+- BevCo manages the relationship between Siempre and Trajectory for Ontario
+- Also represents Siempre across Western Canada (BC, AB)
+- Handling ocean freight coordination (combining Siempre + Chisme into full containers)
+- Eli Diamond plans to be in Ontario mid-June 2026 for 2-4 weeks to launch
+- Mack Zavitz is the Ontario bridge between Siempre and Trajectory
+- Alex Lacroix proposed a **dual-agency model**: Trajectory for LCBO/listed products, Azureau for non-listed/consignment/on-premise — status TBD
+
 **Off-Premise Channel (LCBO Retail - Government Monopoly):**
 - **Channel:** Direct to LCBO via Siempre Spirits Limited (Vendor 0001033380)
-- **Distribution Model:** Siempre ships directly to LCBO distribution centers; LCBO distributes to retail stores
+- **LCBO Agent:** Trajectory (via BevCollective) — as of April 2026
+- **Distribution Model:** Product ships Mexico → ContainerWorld (Richmond, BC) → LCBO picks up from BC → Ontario retail
 - **Ordering Platform:** LCBO Gateway (vendor portal)
 - **Demand Signal:** LCBO issues POs based on inventory/projected demand
-- **Contact:** LCBO Gateway automated system; escalation to LCBO Account Manager if needed
+- **Contact:** Trajectory (TBD — Rick getting intro this week), LCBO Gateway automated system
 
 **On-Premise Channel (Bars/Restaurants/Hotels):**
-- **Distributor:** Dandurand (recently took over from Rival Beverage)
+- **Distributor:** Dandurand (acquired Rival Beverage, early 2026)
 - **Model:** Dandurand supplies licensed establishments directly
-- **Contact:** To be identified - Dandurand sales team
-
-**Previous Distributor (Now Defunct for Siempre):**
-- **Rival Beverage:** Handled on-premise distribution pre-2026
-- **Status:** Acquired by Dandurand; transition completed early 2026
-- **Impact:** Data access loss (Analyticsmart license revoked during M&A)
+- **Possible Agent:** Azureau (proposed for non-listed/consignment/on-premise — TBD)
+- **Contact:** tgc@pdandurand.com, adebartolo@pdandurand.com
 
 ---
 
@@ -248,31 +261,61 @@
 
 ## 8. Operations & Logistics
 
-**LCBO Fulfillment:**
-- **Warehouse:** Siempre ships to LCBO distribution centers (location: Toronto area, likely)
-- **Inbound Process:** PO acknowledgement via Gateway → Siempre fulfills → Delivery to LCBO DC
-- **Inventory:** LCBO owns inventory; replenishment driven by LCBO demand signals
-- **Order Cycle:** Weekly to bi-weekly POs typical (demand-driven)
+**ACTUAL SUPPLY CHAIN FLOW (Mexico → Ontario):**
+```
+Distillery (NOM 1414 Viva Mexico, Arandas / NOM 1479 HLC, Capilla de Guadalupe)
+    ↓  Freight carrier (truck or ocean)
+ContainerWorld warehouse (16133 Blundell Rd, Richmond, BC V6W 0A3)
+    ↓  Provincial transfer — ContainerWorld releases pallet for LCBO pick-up
+LCBO warehouse (Ontario)
+    ↓  LCBO internal distribution
+LCBO retail stores (650+ locations)
+```
+
+**CRITICAL: Product routes through BC (ContainerWorld) before transferring to Ontario. This is NOT a direct Mexico→Ontario shipment.**
+
+**Carrier Options (as of April 2026):**
+| Carrier | Mode | Notes |
+|---------|------|-------|
+| Albatrans | Ocean (Altamira) | AVOID — 60+ day transit, caused June 2025 stockout. LCBO's default but unreliable. |
+| Charger Logistics | Truck | Emergency carrier, proven June 2025. Contact: Patricia. FAST. |
+| BevCollective/Alejandra Cabral | Ocean & Truck | logistics@bevcollective.com. Quoting combined Siempre+Chisme full containers. **Go-forward path.** |
+| Priority1 | Cross-border TL/LTL | Declined March 2026. Robert Connacher, 726-210-6496. Backup. |
+
+**ContainerWorld (BC Warehouse) — Critical Node:**
+- **Sara Patton** — Manager, Customer Care (spatton@containerworld.com, 604-276-1348, mobile 604-240-0804)
+- **Pulkita** — Provincial Transfers (provincialtransfers@containerworld.com)
+- **Amarpreet Samra** (asamra@containerworld.com)
+- Process: Product arrives → inbound to inventory → Ana-Karen emails Provincial Transfers with PO# → ContainerWorld allocates → LCBO picks up
+- **Known bottleneck:** Inventory system slow to update. Ana-Karen had to follow up 7+ times over 3 weeks on PO 102-00785447 (March 2026). Escalation path: Pulkita → Sara Patton → Rick calls Sara directly.
+- **BCLDB annual stock count** (~Feb 21–Mar 1): Freezes ALL shipping for ~10 days. Last ship day = Feb 20. Plan around this.
+
+**Pallet Specifications (confirmed March 2026):**
+| Brand | Cases/Pallet | Weight | Dimensions | Case Size |
+|-------|-------------|--------|------------|-----------|
+| Siempre | 100 | 906 kg | 1.22m x 1.02m x 1.37m | 6x750ml (4.5L) |
+| Chisme | 44 | 694 kg | 48" x 40" x 60" | 12x750ml (9L) |
+
+**LCBO Compliance (lessons from June 2025 crisis):**
+- No special LCBO labeling required (confirmed Feb 2026)
+- No slip sheets or anti-skid glue required (confirmed same)
+- Photograph pallets before they leave distillery — LCBO has blamed Siempre for carrier damage
+- Confirm truck vs. container with agent (Albatrans switching to sea freight without notice caused 2025 crisis)
+
+**Customs & Import:**
+- Siempre has Mexican tequila export permits (confirmed Jan 2026)
+- No dedicated Canadian customs broker — provincial boards handle clearance
+- Carrier handles Mexican customs/border crossing
+
+**Product Lines in Ontario:**
+- **Core SKUs:** Siempre Plata (LCBO #19924 / CSPC 178908), Siempre Reposado (LCBO #24937), Siempre Anejo
+- **New Product:** Tequila Chisme (AGCO registration pending, pallet config confirmed)
+- **Reposado (024937):** Down to 28 bottles across 15 stores. No PO since H1 2025. Rick pushing Trajectory to make this their first mission with LCBO category team.
 
 **On-Premise Logistics (Dandurand):**
 - Dandurand operates regional distribution centers
 - On-premise delivery to bars/restaurants managed by Dandurand routes
 - Siempre visibility limited to: sales orders, demand forecasts, promotional support
-
-**Product Lines in Ontario:**
-- **Core SKUs:** Siempre Plata, Siempre Reposado, Siempre Anejo (registered with AGCO/LCBO)
-- **New Product:** Siempre Chisme (product registration submitted, pallet config in progress)
-- **Lot Tracking:** Managed by Siempre production/supply chain
-
-**Inventory Management:**
-- LCBO holds safety stock; demand-driven replenishment
-- Pallet configuration optimized for LCBO receiving (case quantities per pallet)
-- Chisme new product likely has lower initial inventory allocation (new LCBO listing)
-
-**Key Logistics Consideration:**
-- LCBO delivery schedule may have constraints (specific receiving days/times)
-- Order accuracy critical (LCBO has strict PO matching requirements)
-- Any delivery delays or quality issues can result in deductions/chargebacks
 
 ---
 
@@ -337,6 +380,20 @@
 ## 10. Open Items & Risk Flags
 
 **Critical Issues (Priority Order):**
+
+0. **Trajectory Agent Launch (CRITICAL — TOP PRIORITY)**
+   - **Issue:** New LCBO agent (Trajectory) is just launching as of April 2026. Not yet operational.
+   - **Impact:** No active agent advocacy at LCBO during ramp-up. Reposado reorder has been unaddressed for 8+ months.
+   - **Status:** Training call April 10/11. Eli Diamond in Ontario mid-June. Samples in hand.
+   - **First Mission:** Reposado (SKU 024937) — down to 28 bottles across 15 stores. Sell-through data proves demand. Rick drafting message to Trajectory via BevCo.
+   - **Risk:** If Trajectory ramp-up is slow, Reposado delists permanently and summer sales window is lost.
+   - **Action Required:**
+     - Complete training call this week
+     - Get Trajectory primary contact info (brand manager / category contact)
+     - Hand off Reposado data package immediately
+     - Confirm dual-agency model (Trajectory LCBO + Azureau on-premise) or exclusivity
+   - **Timeline:** THIS WEEK (April 7-11, 2026)
+   - **Owner:** Rick Harper / Mack Zavitz (BevCo)
 
 1. **Analyticsmart Data Access Loss (CRITICAL - URGENT)**
    - **Issue:** Rival Beverage acquisition revoked Siempre's Tableau license
@@ -498,27 +555,48 @@
 
 ---
 
-## 13. Key Contacts (To Identify/Confirm)
+## 13. Key Contacts
+
+**LCBO Agent — Trajectory (NEW, April 2026):**
+- Primary Contact: TBD — Rick getting intro this week (April 7-11)
+- Training call: April 10 or 11, 9AM ET
+- Trajectory has sales conference later in April
+
+**BevCollective (Coordinating Layer):**
+| Name | Role | Contact |
+|------|------|---------|
+| Eli Diamond | Co-Founder/President | eli@bevcollective.com, 672-377-2655 |
+| Alex Staniloff | Partner | alex@bevcollective.com, 403-804-8883 |
+| Mack Zavitz | Ontario Lead (Trajectory bridge) | mack@bevcollective.com |
+| Mike Leon | Team | mike@bevcollective.com |
+| Alejandra Cabral | Logistics | logistics@bevcollective.com |
+
+**ContainerWorld (BC Warehouse — Critical Logistics Node):**
+| Name | Role | Contact |
+|------|------|---------|
+| Sara Patton | Manager, Customer Care | spatton@containerworld.com, 604-276-1348, mobile 604-240-0804 |
+| Pulkita | Provincial Transfers | provincialtransfers@containerworld.com |
+| Amarpreet Samra | Team | asamra@containerworld.com |
+
+**Dandurand Beverage (On-Premise):**
+- tgc@pdandurand.com (LCBO Gateway contact)
+- adebartolo@pdandurand.com (Dandurand team)
+- VP Sales / Account Manager (TBD)
+
+**Previous Agents (Historical Reference):**
+- Noble Estates: Craig De Blois (Craigd@nobleestates.com), Linda Strysio (LindaStrysio@nobleestates.com)
+- Rival: Carolyn O'Grady-Gold (carolyn@rivalbevco.com) — introduced Trajectory
 
 **LCBO:**
-- Account Manager (TBD)
-- PO Contact (noreplylcbogateway@lcbo.com - automated)
-- Chisme Product Committee Contact (TBD)
-
-**Dandurand Beverage:**
-- VP Sales / Account Manager (TBD)
-- Supply Chain Contact (TBD)
-- Finance Contact (TBD)
-
-**AGCO:**
-- Licensing Officer (TBD)
-- Compliance Contact (TBD)
+- PO Contact: noreplylcbogateway@lcbo.com (automated)
+- Sale of Data: Saleofdata@lcbo.com (agents only — Trajectory will need to apply)
+- Category Team: TBD (Trajectory's first mission = Reposado reorder pitch)
 
 **Internal (Siempre):**
-- Ontario State Manager (TBD)
-- Rick (USA Management / Analytics)
-- Nimpha Abalorio (Commercial)
+- Rick Harper (Canada Sales/Ops lead)
 - Monica Sanita (COO)
+- Ana-Karen Moreno (Operations Manager Mexico)
+- Nimpha Abalorio (Administration)
 
 ---
 

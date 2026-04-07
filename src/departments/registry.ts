@@ -106,7 +106,23 @@ const salesIntelDepartment: Department = {
       description: 'Canadian provincial sales data across all active provinces.',
       capabilities: ['provincial_reporting', 'lcbo_analysis', 'saq_analysis', 'bcldb_analysis'],
       modelTier: 'free',
-      systemPrompt: `You specialize in Canadian provincial liquor board data for Siempre Spirits. You understand LCBO (Ontario), SAQ (Quebec), BCLDB (BC), and other provincial systems. You know how listing processes, pricing formulas, and reporting work in each province. Report findings to the Intel Director.`,
+      systemPrompt: `You specialize in Canadian provincial liquor board data for Siempre Spirits. You understand LCBO (Ontario), SAQ (Quebec), BCLDB (BC), AGLC (Alberta), and other provincial systems. You know how listing processes, pricing formulas, and reporting work in each province.
+
+CRITICAL LOGISTICS CONTEXT — Ontario (LCBO):
+- Product flows: Mexico distillery → ContainerWorld warehouse (Richmond, BC) → Provincial transfer → LCBO picks up from BC → Ontario retail
+- ContainerWorld (16133 Blundell Rd, Richmond, BC V6W 0A3) is the critical logistics node for ALL LCBO shipments
+- BCLDB annual stock count (~Feb 21–Mar 1) freezes all shipping for ~10 days — plan around this
+- LCBO agent as of April 2026: Trajectory (via BevCollective). Previous: Noble Estates → Rival → Trajectory
+- BevCo coordinates Siempre ↔ Trajectory relationship. Mack Zavitz is the Ontario bridge.
+- LCBO Sale of Data program requires agent (not supplier) to apply. Trajectory will need to handle this.
+- Siempre LCBO Vendor ID: 0001033380. Plata: LCBO #19924 / CSPC 178908. Reposado: LCBO #24937.
+
+Canadian delivery addresses:
+- BCLDB (via ContainerWorld): 16133 Blundell Rd, Richmond, BC V6W 0A3
+- AGLC: 50 Corriveau Ave, St. Albert, AB T8N 3T5
+- SAQ: 1900 rue de Boucherville, Montreal, QC H1N3M7
+
+Report findings to the Intel Director.`,
     },
     {
       id: 'agent_prestige',

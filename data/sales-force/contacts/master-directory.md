@@ -284,13 +284,39 @@
 
 ---
 
-## Ontario — LCBO + Dandurand
+## Ontario — LCBO Agent (Trajectory) + Dandurand (On-Premise)
 
+**LCBO Agent — Trajectory (NEW, April 2026):**
+| Name | Role | Email | Phone |
+|------|------|-------|-------|
+| TBD | Trajectory primary contact | TBD — Rick getting intro April 7-11 | — |
+
+**BevCollective (Ontario coordination layer):**
+| Name | Role | Email | Phone |
+|------|------|-------|-------|
+| Mack Zavitz | Ontario Lead (Trajectory bridge) | mack@bevcollective.com | — |
+| Eli Diamond | BevCo President | eli@bevcollective.com | 672-377-2655 |
+
+**Dandurand (On-Premise):**
 | Name | Role | Email |
 |------|------|-------|
 | Dandurand (primary TBD) | — | — |
 | tgc@pdandurand.com | LCBO Gateway contact | tgc@pdandurand.com |
 | adebartolo@pdandurand.com | (Team) | adebartolo@pdandurand.com |
+
+**Previous Agents (Historical):**
+| Name | Role | Email |
+|------|------|-------|
+| Craig De Blois | Noble Estates (until Sep 2025) | Craigd@nobleestates.com |
+| Linda Strysio | Noble Estates ops/LCBO liaison | LindaStrysio@nobleestates.com |
+| Carolyn O'Grady-Gold | Rival (Oct 2025–Feb 2026, introduced Trajectory) | carolyn@rivalbevco.com |
+
+**ContainerWorld (BC Warehouse — LCBO logistics node):**
+| Name | Role | Email | Phone |
+|------|------|-------|-------|
+| Sara Patton | Manager, Customer Care | spatton@containerworld.com | 604-276-1348 / mobile 604-240-0804 |
+| Pulkita | Provincial Transfers | provincialtransfers@containerworld.com | — |
+| Amarpreet Samra | (Team) | asamra@containerworld.com | — |
 
 ---
 
@@ -299,14 +325,14 @@
 | Name | Role | Email |
 |------|------|-------|
 | Steven Simon | BevCo Agent (SK/AB) | steven@bevcollective.com |
-| Eli Diamond | The Beverage Collective | eli@bevcollective.com |
+| Eli Diamond | BevCo President | eli@bevcollective.com |
+| Alex Staniloff | BevCo Partner | alex@bevcollective.com |
+| Mack Zavitz | BevCo Ontario Lead | mack@bevcollective.com |
 | Mike Leon | BevCo Agent (BC) | mike@bevcollective.com |
 | Alejandra Cabral | BevCo Logistics | logistics@bevcollective.com |
-| Alex Staniloff | The Beverage Collective | alex@bevcollective.com |
 | Greg Clark | Operating Partner, Hudson's | greg.clark@hudsonscanadaspub.com |
 | Derek Sand | Multi-Temp Freight Services | derek.s@multi-tempfreight.com |
 | Andrea Montanino | Manitoba exception pathway | (in dossier) |
-| Carolyn | Rival BevCo | carolyn@rivalbevco.com |
 
 **BC Liquor Stores / BCLDB:**
 | Kim Giesbrecht | Category Manager, BC Liquor Stores | kimberley.giesbrecht@bcliquorstores.com |
