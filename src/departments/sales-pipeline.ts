@@ -47,11 +47,16 @@ export type SalesTaskType =
   | 'national_rollup'    // "How are we doing nationally?" — all markets
   | 'onboarding'         // "We're entering Nebraska" — new market activation
   | 'compliance_check'   // "Any compliance risks?" — regulatory scan
-  | 'farming_check';     // "Which accounts haven't re-ordered in 30 days?" — account health
+  | 'farming_check'     // "Which accounts haven't re-ordered in 30 days?" — account health
+  | 'hunt';             // "Run the TX hunt for week of Apr 14" — new account prospecting
 
 export function classifySalesTask(prompt: string): SalesTaskType {
   const lower = prompt.toLowerCase();
 
+  if (lower.includes('prospect') || lower.includes('new account') || lower.includes('new listing') ||
+      lower.includes('hunt') || lower.includes('cocktail gap') || lower.includes('on-premise target') ||
+      lower.includes('acquire') || lower.includes('target accounts') || lower.includes('outreach'))
+    return 'hunt';
   if (lower.includes('farm') || lower.includes('re-order') || lower.includes('reorder') ||
       lower.includes('account health') || lower.includes('going cold') || lower.includes('at risk') ||
       lower.includes('lapsed') || lower.includes('listing at risk') || lower.includes('volume drop') ||
@@ -124,6 +129,10 @@ export function getSalesPipelineStages(taskType: SalesTaskType): SalesPipelineSt
     case 'farming_check':
       // Route to Farming Coordinator — no dossier load, farming has its own pipeline
       return ['market_identify', 'agent_analysis', 'solace_review', 'executive_action'];
+
+    case 'hunt':
+      // Route to Hunting Coordinator — spawns ephemeral Hunt Window Agents
+      return ['market_identify', 'agent_analysis', 'director_synthesis', 'solace_review', 'executive_action'];
   }
 }
 
