@@ -1,8 +1,8 @@
 # COLORADO (CO) STATE INTELLIGENCE DOSSIER
 
-**CO is a premium spirits market led by Denver and Boulder. Active Tier 1. Alex owns. Distributor: JB Maverick (Monday.com coverage map was stale with "Empire" — JB Maverick is correct per Apr 2026 correction). Depletion data requires VIP iDig pull.**
+**CO is a premium spirits market led by Denver and Boulder. Active Tier 1. Alex owns. Distributor: Johnson Brothers Maverick Colorado (Monday.com coverage map was stale with "Empire" — Johnson Brothers Maverick Colorado is correct per Apr 2026 correction). Depletion data requires VIP iDig pull.**
 
-> ⚠️ **DISTRIBUTOR VERIFIED:** JB Maverick is confirmed correct. "Empire" was a stale entry in Monday.com (corrected Apr 11 2026). Verify JB Maverick key contacts before outreach.
+> ⚠️ **DISTRIBUTOR VERIFIED:** Johnson Brothers Maverick Colorado is confirmed correct. "Empire" was a stale entry in Monday.com (corrected Apr 11 2026). Verify Johnson Brothers Maverick Colorado key contacts before outreach.
 
 ---
 
@@ -19,7 +19,7 @@
 **Siempre Spirits Current Status:**
 - Tier: **Tier 1 (Active)**
 - Relationship health: **⚠️ UNKNOWN — verify current status with VIP iDig**
-- Distribution: **JB Maverick** (confirmed, Apr 2026)
+- Distribution: **Johnson Brothers Maverick Colorado** (confirmed, Apr 2026)
 - Alex Lacroix primary sales owner.
 
 ---
@@ -35,7 +35,7 @@
 
 **Promotional Rules:**
 - Post-offs: Permitted
-- DAs: Permitted — verify structure with JB Maverick
+- DAs: Permitted — verify structure with Johnson Brothers Maverick Colorado
 - Tastings: Permitted at licensed retailer locations
 - Molly's Spirits programs: CO's leading independent — Molly's carries serious craft spirits buyers and runs regular tasting events
 
@@ -47,9 +47,9 @@
 
 ## 3. DISTRIBUTION STRUCTURE
 
-**Primary Distributor:** JB Maverick
+**Primary Distributor:** Johnson Brothers Maverick Colorado
 - Coverage: Colorado statewide (verify exact territory)
-- Note: Previous Monday.com entry showed "Empire" — **JB Maverick is correct** (Monday entry corrected Apr 11 2026)
+- Note: Previous Monday.com entry showed "Empire" — **Johnson Brothers Maverick Colorado is correct** (Monday entry corrected Apr 11 2026)
 
 > Pull contact details from email archive or direct outreach. Alex owns this relationship.
 
@@ -59,7 +59,7 @@
 
 | Name | Title | Email | Phone | Status |
 |------|-------|-------|-------|--------|
-| **[JB Maverick CO Contact]** | [VERIFY] | — | — | ⚠️ CONFIRM FROM EMAIL ARCHIVE |
+| **[Johnson Brothers Maverick Colorado CO Contact]** | [VERIFY] | — | — | ⚠️ CONFIRM FROM EMAIL ARCHIVE |
 
 ### Siempre-Side Ownership
 
@@ -97,7 +97,7 @@
 
 **Aspen/Vail corridor:** Ultra-premium placements can support higher on-premise pour prices. Focus on Añejo and Reposado positioning in resort accounts.
 
-**FOBs:** Verify current CO FOB schedule with JB Maverick.
+**FOBs:** Verify current CO FOB schedule with Johnson Brothers Maverick Colorado.
 
 ---
 
@@ -105,8 +105,8 @@
 
 **[PENDING VERIFICATION]**
 
-> Pull VIP iDig CO data and check email archive for JB Maverick threads. Key questions:
-> 1. Current key contact at JB Maverick?
+> Pull VIP iDig CO data and check email archive for Johnson Brothers Maverick Colorado threads. Key questions:
+> 1. Current key contact at Johnson Brothers Maverick Colorado?
 > 2. Last meeting/call date?
 > 3. Current volume (9L-eq/quarter)?
 > 4. Is Molly's Spirits currently stocked?
@@ -118,8 +118,8 @@
 
 | SKU | Status | Notes |
 |-----|--------|-------|
-| Siempre Plata | ⚠️ VERIFY | Confirm with JB Maverick |
-| Siempre Reposado | ⚠️ VERIFY | Confirm with JB Maverick |
+| Siempre Plata | ⚠️ VERIFY | Confirm with Johnson Brothers Maverick Colorado |
+| Siempre Reposado | ⚠️ VERIFY | Confirm with Johnson Brothers Maverick Colorado |
 | Siempre Añejo | ⚠️ VERIFY | Target: Aspen/Vail resort dining |
 | Chisme | 🔵 NOT YET | Boulder market = natural fit for clean/additive-free positioning |
 
@@ -133,13 +133,13 @@
 | **Boulder** | ⚠️ VERIFY | Additive-free tequila plays very well here. Pearl Street accounts. |
 | **Fort Collins** | ⚠️ VERIFY | Craft beverage culture. On-premise accounts near CSU. |
 | **Aspen / Vail / Telluride** | ⚠️ VERIFY | Ultra-premium opportunity for Añejo. Seasonal volume (ski season Nov–Apr). |
-| **Colorado Springs** | 🟡 PASSIVE | Lower cocktail culture density. JB Maverick coverage but not a priority. |
+| **Colorado Springs** | 🟡 PASSIVE | Lower cocktail culture density. Johnson Brothers Maverick Colorado coverage but not a priority. |
 
 ---
 
 ## 10. OPERATIONS & LOGISTICS
 
-**Freight:** PA warehouse → JB Maverick CO warehouse
+**Freight:** PA warehouse → Johnson Brothers Maverick Colorado CO warehouse
 **AR status:** [VERIFY]
 
 ---
@@ -148,14 +148,14 @@
 
 | # | Item | Owner | Priority | Status |
 |---|------|-------|----------|--------|
-| 1 | Identify JB Maverick key contact — pull from email archive | Alex | 🔴 URGENT | DO FIRST |
+| 1 | Identify Johnson Brothers Maverick Colorado key contact — pull from email archive | Alex | 🔴 URGENT | DO FIRST |
 | 2 | Pull VIP iDig CO depletion data — establish volume baseline | Alex | 🔴 URGENT | DO FIRST |
 | 3 | Confirm Molly's Spirits listing status | Alex | 🟠 HIGH | PENDING |
 | 4 | Set annual KPI targets with Alex — 120 9L-eq/year is working baseline | Alex | 🟠 HIGH | PENDING |
 | 5 | Assess Aspen/Vail Añejo placement opportunity | Alex | 🟡 MEDIUM | PENDING |
 | 6 | Assess Boulder Chisme opportunity (additive-free angle) | Alex | 🟡 MEDIUM | PENDING |
-| 7 | Update Monday.com CO entry from Empire → JB Maverick | Alex/Monica | 🟡 MEDIUM | PENDING |
+| 7 | Update Monday.com CO entry from Empire → Johnson Brothers Maverick Colorado | Alex/Monica | 🟡 MEDIUM | PENDING |
 
 **Risk Flags:**
-- Distributor name was stale in Monday.com (Empire vs. JB Maverick). Verify all other Monday entries before trusting for CO data.
+- Distributor name was stale in Monday.com (Empire vs. Johnson Brothers Maverick Colorado). Verify all other Monday entries before trusting for CO data.
 - This dossier is a framework shell. Populate sections 3-4-7 before using for agent scoring.
