@@ -1,8 +1,6 @@
 # FLORIDA (FL) STATE INTELLIGENCE DOSSIER
 
-**FL is a major US spirits market with strong on-premise culture. Active Tier 1. Nick Henry owns. Distributor and current depletion status require verification — pull from VIP iDig and coverage map before activating this dossier.**
-
-> ⚠️ **VERIFY BEFORE USE:** Distributor name, key contacts, and current depletion figures are not confirmed in this dossier. Read Siempre_Distributor_Coverage sheet (Optimus Drive → 04_DASHBOARDS) and pull VIP iDig FL data before outreach or analysis.
+**FL is a major US spirits market with strong on-premise culture. Active Tier 1. Nick Henry owns. Distributor: Johnson Brothers Maverick Florida. Key contacts and depletion data require VIP iDig pull before scoring.**
 
 ---
 
@@ -19,7 +17,7 @@
 **Siempre Spirits Current Status:**
 - Tier: **Tier 1 (Active)**
 - Relationship health: **⚠️ UNKNOWN — verify current status with VIP iDig + coverage map**
-- Distribution: **[VERIFY — check Siempre_Distributor_Coverage sheet on Optimus Drive]**
+- Distribution: **Johnson Brothers Maverick Florida**
 - Nick Henry primary sales owner.
 
 ---
@@ -48,10 +46,8 @@
 
 ## 3. DISTRIBUTION STRUCTURE
 
-**Primary Distributor:** [VERIFY — check Siempre_Distributor_Coverage sheet]
-- Coverage: Florida is geographically diverse — verify whether distributor covers full state (Southern Wine & Spirits, RNDC, and Breakthru all operate in FL)
-
-> Pull coverage map from Optimus Drive before any FL distributor outreach.
+**Primary Distributor:** Johnson Brothers Maverick Florida
+- Coverage: Florida statewide (verify regional sub-territory structure)
 
 ---
 
@@ -59,7 +55,7 @@
 
 | Name | Title | Email | Phone | Status |
 |------|-------|-------|-------|--------|
-| **[FL Distributor Contact]** | [VERIFY] | — | — | ⚠️ PENDING VERIFICATION |
+| **[Johnson Brothers Maverick FL Contact]** | Pull from email archive | — | — | ⚠️ Pull from email archive |
 
 ### Siempre-Side Ownership
 
@@ -151,8 +147,8 @@
 
 | # | Item | Owner | Priority | Status |
 |---|------|-------|----------|--------|
-| 1 | Verify FL distributor from coverage map (Optimus Drive → 04_DASHBOARDS) | Nick/Alex | 🔴 URGENT | DO FIRST |
-| 2 | Pull VIP iDig FL depletion data — establish volume baseline | Nick | 🔴 URGENT | DO FIRST |
+| 1 | Pull VIP iDig FL depletion data — establish volume baseline | Nick | 🔴 URGENT | DO FIRST |
+| 2 | Identify Johnson Brothers Maverick FL key contact — pull from email archive | Nick | 🔴 URGENT | DO FIRST |
 | 3 | Set annual KPI targets with Alex — 250 9L-eq/year is working baseline | Alex+Nick | 🟠 HIGH | PENDING |
 | 4 | Identify FL distributor key contact + schedule touchpoint | Nick | 🟠 HIGH | PENDING |
 | 5 | Confirm ABC Fine Wine & Spirits listing status | Nick | 🟠 HIGH | PENDING |

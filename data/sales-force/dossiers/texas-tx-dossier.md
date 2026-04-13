@@ -1,8 +1,6 @@
 # TEXAS (TX) STATE INTELLIGENCE DOSSIER
 
-**TX is a top-3 US tequila market by volume. Active Tier 1. Nick Henry owns. Distributor and current depletion status require verification — pull from VIP iDig and coverage map before activating this dossier.**
-
-> ⚠️ **VERIFY BEFORE USE:** Distributor name, key contacts, and current depletion figures are not confirmed in this dossier. Read Siempre_Distributor_Coverage sheet (Optimus Drive → 04_DASHBOARDS) and pull VIP iDig TX data before outreach or analysis.
+**TX is a top-3 US tequila market by volume. Active Tier 1. Nick Henry owns. Distributor: RNDC Texas. Key contacts and depletion data require VIP iDig pull before scoring.**
 
 ---
 
@@ -19,7 +17,7 @@
 **Siempre Spirits Current Status:**
 - Tier: **Tier 1 (Active)**
 - Relationship health: **⚠️ UNKNOWN — verify current status with VIP iDig + coverage map**
-- Distribution: **[VERIFY — check Siempre_Distributor_Coverage sheet on Optimus Drive]**
+- Distribution: **RNDC Texas**
 - Nick Henry primary sales owner.
 
 ---
@@ -48,12 +46,8 @@
 
 ## 3. DISTRIBUTION STRUCTURE
 
-**Primary Distributor:** [VERIFY — check Siempre_Distributor_Coverage sheet]
-- Coverage: Texas is a large state — verify whether distributor covers full state or specific regions
-
-**Known market structure:** Texas uses multiple distributors by territory (major vs. secondary). Large distributors (RNDC, Glazer's, Republic National, Ben E. Keith) each cover different parts of the state.
-
-> Pull coverage map from Optimus Drive before any TX distributor outreach.
+**Primary Distributor:** RNDC Texas
+- Coverage: Statewide (verify territory details — TX is large and RNDC may use regional sub-territories for coverage)
 
 ---
 
@@ -61,7 +55,7 @@
 
 | Name | Title | Email | Phone | Status |
 |------|-------|-------|-------|--------|
-| **[TX Distributor Contact]** | [VERIFY] | — | — | ⚠️ PENDING VERIFICATION |
+| **[RNDC TX Contact]** | Pull from email archive or VIP iDig | — | — | ⚠️ Pull from email archive |
 
 ### Siempre-Side Ownership
 
@@ -151,8 +145,8 @@
 
 | # | Item | Owner | Priority | Status |
 |---|------|-------|----------|--------|
-| 1 | Verify TX distributor from coverage map (Optimus Drive → 04_DASHBOARDS) | Nick/Alex | 🔴 URGENT | DO FIRST |
-| 2 | Pull VIP iDig TX depletion data — establish volume baseline | Nick | 🔴 URGENT | DO FIRST |
+| 1 | Pull VIP iDig TX depletion data — establish volume baseline | Nick | 🔴 URGENT | DO FIRST |
+| 2 | Identify RNDC TX key contact — pull from email archive or VIP iDig account page | Nick | 🔴 URGENT | DO FIRST |
 | 3 | Set annual KPI targets with Alex — 300 9L-eq/year is working baseline | Alex+Nick | 🟠 HIGH | PENDING |
 | 4 | Identify TX distributor key contact + schedule call | Nick | 🟠 HIGH | PENDING |
 | 5 | Confirm Spec's listing status and chain program opportunity | Nick | 🟠 HIGH | PENDING |

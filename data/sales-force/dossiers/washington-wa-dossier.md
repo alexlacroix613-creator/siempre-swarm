@@ -1,10 +1,10 @@
 # WASHINGTON (WA) STATE INTELLIGENCE DOSSIER
 
-**WA is a premium spirits market led by Seattle. Active Tier 1. Alex owns. WA is the REFERENCE PRICING MODEL STATE — read the WA pricing model before building any new state proposal. Distributor requires verification from coverage map.**
+**WA is a premium spirits market led by Seattle. Active Tier 1. Alex owns. WA is the REFERENCE PRICING MODEL STATE — read the WA pricing model before building any new state proposal. Distributor: RNDC Washington.**
 
 > ⚠️ **PRICING REFERENCE:** WA is the canonical reference for Siempre's pricing architecture. Before building any new state pricing model, read the WA pricing model first (Optimus Drive → 01_US_MARKETS/WA/02_Pricing/).
 
-> ⚠️ **VERIFY BEFORE USE:** Distributor name, key contacts, and current depletion figures require verification. Pull from coverage map + VIP iDig.
+Key contacts and current depletion figures require VIP iDig pull before scoring.
 
 ---
 
@@ -21,7 +21,7 @@
 **Siempre Spirits Current Status:**
 - Tier: **Tier 1 (Active)**
 - Relationship health: **⚠️ UNKNOWN — verify current status**
-- Distribution: **[VERIFY — check Siempre_Distributor_Coverage sheet on Optimus Drive]**
+- Distribution: **RNDC Washington**
 - Alex Lacroix primary sales owner.
 
 ---
@@ -49,10 +49,10 @@
 
 ## 3. DISTRIBUTION STRUCTURE
 
-**Primary Distributor:** [VERIFY — check Siempre_Distributor_Coverage sheet]
-- Coverage: WA statewide (verify)
+**Primary Distributor:** RNDC Washington
+- Coverage: WA statewide
 
-> Pull coverage map from Optimus Drive. Also: WA Costco relationship should be confirmed — if distributor serves Costco WA, that's a significant volume opportunity.
+> Costco WA: RNDC is a major Costco supplier nationally — confirm whether RNDC WA handles the Costco WA account, as that's a significant volume opportunity.
 
 ---
 
@@ -60,7 +60,7 @@
 
 | Name | Title | Email | Phone | Status |
 |------|-------|-------|-------|--------|
-| **[WA Distributor Contact]** | [VERIFY] | — | — | ⚠️ PENDING VERIFICATION |
+| **[RNDC WA Contact]** | Pull from email archive | — | — | ⚠️ Pull from email archive or RNDC account portal |
 
 ### Siempre-Side Ownership
 
@@ -136,7 +136,7 @@
 | **Seattle** | ⚠️ VERIFY | Capitol Hill, Belltown, South Lake Union. Cocktail bar density. Top priority. |
 | **Bellevue / Eastside** | ⚠️ VERIFY | Tech corridor hotel bars + upscale restaurants. Añejo play. |
 | **Tacoma** | ⚠️ VERIFY | Secondary. Smaller on-premise scene. |
-| **Spokane** | ⚠️ VERIFY | Eastern WA. Lower cocktail culture density. JB Maverick territory (if serving eastern WA). |
+| **Spokane** | ⚠️ VERIFY | Eastern WA. Lower cocktail culture density. RNDC WA covers statewide. |
 
 ---
 
@@ -150,8 +150,8 @@
 
 | # | Item | Owner | Priority | Status |
 |---|------|-------|----------|--------|
-| 1 | Verify WA distributor from coverage map (Optimus Drive → 04_DASHBOARDS) | Alex | 🔴 URGENT | DO FIRST |
-| 2 | Pull VIP iDig WA depletion data — establish volume baseline | Alex | 🔴 URGENT | DO FIRST |
+| 1 | Pull VIP iDig WA depletion data — establish volume baseline | Alex | 🔴 URGENT | DO FIRST |
+| 2 | Identify RNDC WA key contact — pull from email archive | Alex | 🔴 URGENT | DO FIRST |
 | 3 | Confirm distributor Costco WA relationship — significant volume opportunity | Alex | 🟠 HIGH | PENDING |
 | 4 | Set annual KPI targets with Alex — 100 9L-eq/year is working baseline | Alex | 🟠 HIGH | PENDING |
 | 5 | Review WA pricing model (Drive) before any pricing changes | Alex | 🟠 HIGH | BEFORE ANY PRICING |
