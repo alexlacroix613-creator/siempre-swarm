@@ -77,17 +77,53 @@ outputs:
 ## Pipeline Stage Definitions
 
 ```
-[Lead Source] → [Qualification] → [Rep Briefing] → [Outreach Draft] → [Follow-up Cadence] → [Listing Confirmed]
+[Account Prep] → [State Validation] → [Lead Source] → [Qualification] → [Rep Briefing] → [Outreach Draft] → [Follow-up Cadence] → [Listing Confirmed]
 ```
 
-### Stage 1 — Lead Source
-**What:** Pull the raw account list for the market × week window from master contacts DB.
-**Inputs:** market_code, target_account_types, existing_accounts (dedup list)
+### Pre-Stage — Account Preparation (Managed Agent, runs before Hunt Window Agent spawns)
+
+**What:** A managed agent reads the master contacts DB, filters to the territory, and writes a clean account CSV to the state folder. The existing State Agent (market agent) then validates the list before the Hunt Window Agent is spawned.
+
+**Who runs this:** Hunting Coordinator triggers a managed SDK agent (NOT the Hunt Window Agent itself). This is pre-hunt infrastructure, not part of the hunt pipeline.
+
 **Actions:**
-- Query master contacts DB filtered by: state, account type, no existing listing
-- Remove any account already in CRM (dedup by account_id or address match)
-- Segment into: on-premise (bars/restaurants), chain (retail/grocery), independent (bottle shops)
-**Output:** `raw_leads: AccountTarget[]` — deduplicated, typed, sorted by priority tier
+1. Managed agent reads `data/sales-force/contacts/master-directory.md` (or contacts DB)
+2. Filters to: `market_code`, `account_type IN (on-prem, chain, independent)`, excludes accounts already in master_sales with active Siempre listing
+3. Writes output to: `data/sales-force/hunt-queue/{STATE_CODE}/accounts-{YYYY-MM-DD}.csv`
+4. State Agent (existing market agent for that state) reads the CSV, validates completeness and correctness:
+   - Flags closed/inactive accounts it knows about
+   - Flags accounts already in an open relationship (rep intel it holds)
+   - Confirms account type classifications
+   - Returns: `validated_accounts.csv` (same path, `_validated` suffix) + `validation_notes.md`
+5. Hunting Coordinator reads validated list → spawns Hunt Window Agent with it as input
+
+**State folder naming convention:**
+```
+data/sales-force/hunt-queue/
+  {STATE_CODE}/
+    accounts-{YYYY-MM-DD}.csv          ← managed agent output (raw)
+    accounts-{YYYY-MM-DD}_validated.csv ← state agent output (clean)
+    validation-{YYYY-MM-DD}.md         ← state agent notes + flags
+```
+
+**Example:** `data/sales-force/hunt-queue/CO/accounts-2026-04-13.csv`
+
+**Why this way:**
+- Hunt Window Agents receive clean, validated data — they focus on qualification and outreach, not data hygiene
+- State Agent validation uses market-specific knowledge the Hunt Window Agent doesn't have
+- The CSV is a persistent audit trail — you can see exactly what account list fed any hunt cycle
+- Pre-filtering is done once, not inside every agent call
+
+---
+
+### Stage 1 — Lead Source
+**What:** Hunt Window Agent reads the pre-validated account list from the state folder. No direct DB query.
+**Inputs:** `validated_accounts.csv` from `data/sales-force/hunt-queue/{STATE_CODE}/accounts-{week_start}_validated.csv`, plus `validation_notes.md`
+**Actions:**
+- Load validated account list (already deduplicated, typed, territory-filtered)
+- Review any flags from validation notes — escalate CRITICAL flags to Hunting Coordinator before proceeding
+- Segment final list into: on-premise (A/B/C tier), chain (→ Tier X routing), independent
+**Output:** `raw_leads: AccountTarget[]` — ready for qualification
 
 ### Stage 2 — Qualification
 **What:** Score each lead for hunting fit this cycle.
@@ -131,14 +167,28 @@ outputs:
 **Output:** `follow_up_schedule: FollowUpEntry[]` — each with: account_id, follow_up_date, assigned_rep, action_type
 
 ### Stage 6 — Listing Confirmed
-**What:** Record a confirmed listing — a new account agreed to carry Siempre.
+**What:** Record a confirmed listing and queue it for human approval before handing to the Farming Layer.
 **Trigger:** Rep reports back via email/CRM update, parsed by Hunting Coordinator
+
 **Actions:**
-- Update master contacts DB: add listing record
-- Remove from active hunt queue
-- Log outcome in HuntingResult
-- Trigger farming handoff: account moves to Farming Layer on first re-order window
-**Output:** `confirmed_listing: ListingRecord`
+1. Hunting Coordinator records the rep's confirmation
+2. Waits for depletion confirmation — a real order must appear in VIP iDig or Winebow data for this account (1–4 week lag)
+3. Once depletion confirmed, adds account to `data/sales-force/hunt-queue/pending-handoff.json`:
+   ```json
+   {
+     "account": "...", "market": "CO", "sku_confirmed": ["plata"],
+     "rep": "...", "listing_confirmed_date": "...",
+     "depletion_confirmed": true, "depletion_confirmed_date": "...",
+     "status": "PENDING_APPROVAL"
+   }
+   ```
+4. Hunting Coordinator generates **weekly batch approval list** for Alex — accounts ready for Farming Layer handoff
+5. Alex reviews and approves (batch or individually)
+6. **Only after approval:** master contacts DB updated with listing record, account registered in Farming Layer
+
+**Why human-gated:** Not automatic until we test it and confirm the data pipeline is reliable. After a few cycles of clean approvals, can be promoted to semi-automatic (flag exceptions only).
+
+**Output:** `confirmed_listing: ListingRecord` with `status: "pending_approval"` until Alex approves
 
 ---
 
