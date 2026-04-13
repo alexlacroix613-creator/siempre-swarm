@@ -260,6 +260,6 @@ Executive Briefing (Alex)
 ## Open Questions for Alex
 
 1. Should Hunt Window Agents pull account lists from the master contacts DB directly, or does a human (Nick/Rick/AK) pre-filter the list before each hunt cycle?
-2. MailChimp — is the account already connected to Maton, or does this require a new integration?
-3. For chain accounts (e.g. Total Wine, Specs), should hunt drafts go to the distributor's chain team or to the buyer directly?
-4. Is the farming handoff automatic (agent to agent) or does Alex/Nick confirm before an account moves to the Farming Layer?
+2. **RESOLVED 2026-04-12:** MailChimp is NOT on Maton. Requires new direct API integration. Gated on Job 9 (Rick skills discovery — Rick likely has the MailChimp key). Job 16 = new integration, not a Maton connector.
+3. **RESOLVED 2026-04-12:** Chain account drafts go to the distributor's chain team AND buyer directly — CC everybody (full Siempre team in copy). Alex confirmed: "theoretically, with everybody in copy."
+4. **RESOLVED 2026-04-12:** Farming handoff is NOT automatic. Requires: (a) sale confirmed in depletion/shipment data, (b) documented for human approval, (c) batch approval list generated for Alex to review. Only after approval does account move to Farming Layer. Rationale: "needs to be tested before we trust it."
