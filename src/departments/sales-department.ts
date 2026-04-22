@@ -1,7 +1,7 @@
 /**
  * Sales Department — National AI Sales Force
  *
- * 55 market agents (one per state/province) + Sales Director.
+ * 56 market agents (one per state/province) + Sales Director.
  * Each agent loads the foundation document + its market-specific dossier.
  * Strict comms firewall: NO agent can contact anyone outside @siempretequila.com.
  *
@@ -67,7 +67,6 @@ const TIER_1_MARKETS: Array<[string, string]> = [
   ['Texas', 'TX'],
   ['Colorado', 'CO'],
   ['Washington', 'WA'],
-  ['Oregon', 'OR'],
   ['Florida', 'FL'],
   ['Illinois', 'IL'],
   ['Ontario', 'ON'],
@@ -83,10 +82,13 @@ const TIER_2_MARKETS: Array<[string, string]> = [
   ['Missouri', 'MO'],
   ['Virginia', 'VA'],
   ['Utah', 'UT'],
+  ['Wyoming', 'WY'],
+  ['South Carolina', 'SC'],
   ['Alberta', 'AB'],
   ['Saskatchewan', 'SK'],
   ['Manitoba', 'MB'],
   ['British Columbia', 'BC'],
+  ['Quebec', 'QC'],
 ];
 
 /** Phase 3: No active distribution — regulatory shells only */
@@ -95,8 +97,7 @@ const PHASE_3_MARKETS: Array<[string, string]> = [
   ['Alabama', 'AL'], ['Idaho', 'ID'], ['Iowa', 'IA'], ['Maine', 'ME'],
   ['Michigan', 'MI'], ['Mississippi', 'MS'], ['Montana', 'MT'],
   ['New Hampshire', 'NH'], ['North Carolina', 'NC'], ['Ohio', 'OH'],
-  ['Pennsylvania', 'PA'], ['Vermont', 'VT'], ['West Virginia', 'WV'],
-  ['Wyoming', 'WY'],
+  ['Oregon', 'OR'], ['Pennsylvania', 'PA'], ['Vermont', 'VT'], ['West Virginia', 'WV'],
   // Franchise-Flagged
   ['Connecticut', 'CT'], ['Massachusetts', 'MA'], ['New Jersey', 'NJ'],
   ['Wisconsin', 'WI'],
@@ -108,7 +109,6 @@ const PHASE_3_MARKETS: Array<[string, string]> = [
   ['Indiana', 'IN'], ['Kentucky', 'KY'], ['Louisiana', 'LA'],
   ['Nebraska', 'NE'], ['Nevada', 'NV'], ['New Mexico', 'NM'],
   ['New York', 'NY'], ['North Dakota', 'ND'], ['Rhode Island', 'RI'],
-  ['South Carolina', 'SC'],
 ];
 
 /** All markets combined */
@@ -178,7 +178,7 @@ If you don't have both, stop and request them.
 ## Reporting Source
 ${code === 'OK' ? '**EXCEPTION:** Use Dive → Optimus for depletion data. VIP iDig does NOT reliably capture Oklahoma.' :
   code === 'CA' ? '**NOTE:** VIP iDig integration is live for California. Real-time visibility available.' :
-  ['ON', 'AB', 'SK', 'MB', 'BC'].includes(code) ? '**NOTE:** Use provincial liquor board portals. Canadian data has 60-90 day lag.' :
+  ['ON', 'AB', 'SK', 'MB', 'BC', 'QC'].includes(code) ? '**NOTE:** Use provincial liquor board portals. Canadian data has 60-90 day lag. QC: SAQ portal + eLLIS tender system.' :
   'Standard: VIP iDig for US depletion data.'}
 
 ## Tone
@@ -196,7 +196,7 @@ const salesDirector: AgentRole = {
   name: 'Sales Director',
   department: 'sales' as DepartmentId,
   containerTag: 'dept_sales',
-  description: 'National Sales Director. Synthesizes intelligence across all 55 markets, runs weekly scorecard rollups, handles cross-market escalations, and produces the executive sales briefing.',
+  description: 'National Sales Director. Synthesizes intelligence across all 56 markets, runs weekly scorecard rollups, handles cross-market escalations, and produces the executive sales briefing.',
   capabilities: [
     'cross_market_synthesis',
     'scorecard_rollup',
@@ -205,8 +205,8 @@ const salesDirector: AgentRole = {
     'market_prioritization',
     'executive_briefing',
   ],
-  modelTier: 'top', // Stratum IV — holds 55 markets in parallel
-  systemPrompt: `You are the National Sales Director for Siempre Spirits, overseeing 55 markets (28 US states + 5 Canadian provinces + 22 regulatory shells).
+  modelTier: 'top', // Stratum IV — holds 56 markets in parallel
+  systemPrompt: `You are the National Sales Director for Siempre Spirits, overseeing 56 markets (7 Tier 1, 15 Tier 2, 34 regulatory shells).
 
 ## Your Role
 You are the strategic layer between market-level execution and executive decision-making. You:
@@ -218,14 +218,14 @@ You are the strategic layer between market-level execution and executive decisio
 - Produce the monthly Market Health Briefing
 
 ## Market Tiers
-- **Tier 1 (8 markets):** CA, TX, CO, WA, OR, FL, IL, ON — highest activity, deepest dossiers
-- **Tier 2 (12 markets):** KS, OK, TN, GA, AR, MO, VA, UT, AB, SK, MB, BC — active/transitioning
-- **Phase 3 (35 markets):** Regulatory shells only — no active distribution
+- **Tier 1 (7 markets):** CA, TX, CO, WA, FL, IL, ON — highest activity, deepest dossiers
+- **Tier 2 (15 markets):** KS, OK, TN, GA, AR, MO, VA, UT, WY, SC, AB, SK, MB, BC, QC — active/transitioning
+- **Phase 3 (34 markets):** Regulatory shells only — no active distribution
 
 ## Scoring Rules
-- A Markets (6): 5-factor scoring (% to target, reorder rate, pipeline coverage, core SKU mix, spend/case)
-- B Markets (12): 3-factor scoring (% to target, reorder rate, pipeline coverage)
-- C Markets (35): 1-factor + dark market alert
+- A Markets (7): 5-factor scoring (% to target, reorder rate, pipeline coverage, core SKU mix, spend/case)
+- B Markets (15): 3-factor scoring (% to target, reorder rate, pipeline coverage)
+- C Markets (34): 1-factor + dark market alert
 
 ## Diagnosis Principles
 1. Name the distributor, not the state
@@ -281,7 +281,7 @@ const generalSalesKeywords = [
 export const salesDepartment: Department = {
   id: 'sales' as DepartmentId,
   name: 'National Sales Force',
-  description: 'AI-powered national sales organization. 55 market agents (one per state/province) with strict isolation between markets. Each agent loads foundation + market-specific dossier. Comms firewall: zero external contact authority.',
+  description: 'AI-powered national sales organization. 56 market agents (one per state/province) with strict isolation between markets. Each agent loads foundation + market-specific dossier. Comms firewall: zero external contact authority.',
   containerTag: 'dept_sales',
   director: salesDirector,
   agents: ALL_MARKETS.map(([name, code]) => createMarketAgent(name, code)),
