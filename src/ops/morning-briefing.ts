@@ -26,8 +26,10 @@ import { LocalMemoryStore } from '../memory/local-memory.js';
 import { QualityTracker } from '../governance/quality-tracker.js';
 import { PRODUCT_TEAMS } from '../departments/product-teams.js';
 import { DEPARTMENTS } from '../departments/registry.js';
+import { tenantPath } from '../tenant/resolver.js';
 
 const HOME = homedir();
+const MEMORY_DIR = tenantPath('memory');
 
 // ============================================================================
 // GIT STATUS ACROSS REPOS
@@ -96,7 +98,7 @@ interface SessionSummary {
 }
 
 function getLastSession(): SessionSummary | null {
-  const sessionDir = join(HOME, '.siempre-swarm', 'sessions');
+  const sessionDir = join(MEMORY_DIR, 'sessions');
   if (!existsSync(sessionDir)) return null;
 
   const files = readdirSync(sessionDir)
@@ -147,7 +149,7 @@ async function generateBriefing(): Promise<string> {
   // 2. Git status across repos
   lines.push('── REPO STATUS ──');
   const repos: Array<[string, string]> = [
-    ['Siempre Swarm', '~/siempre-swarm'],
+    ['Siempre Swarm', tenantPath('swarm')],
     ['Combobulator', '~/CLAUDE BRAIN/Combobulator'],
     ['FieldKit', '~/fieldkit'],
     ['GAWD', '~/CLAUDE BRAIN/GAWD'],
@@ -201,7 +203,7 @@ async function generateBriefing(): Promise<string> {
   const deptCount = Object.keys(DEPARTMENTS).length;
   const productCount = Object.keys(PRODUCT_TEAMS).length;
   lines.push(`  Departments: ${deptCount} | Product Teams: ${productCount}`);
-  lines.push(`  Local memory: ~/.siempre-swarm/memory.db`);
+  lines.push(`  Local memory: ${join(MEMORY_DIR, 'memory.db')}`);
 
   try {
     const memory = new LocalMemoryStore();

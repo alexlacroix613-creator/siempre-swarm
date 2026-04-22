@@ -11,15 +11,16 @@
  *   - Upgrade the model tier for those agents
  *   - Pull that task type back to direct Opus handling
  *
- * Stored in local SQLite at ~/.siempre-swarm/quality.db
+ * Stored in local SQLite under the active tenant's memory dir
+ * (see src/tenant/resolver.ts).
  */
 
 import Database from 'better-sqlite3';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { homedir } from 'os';
+import { tenantPath } from '../tenant/resolver.js';
 
-const DB_DIR = join(homedir(), '.siempre-swarm');
+const DB_DIR = tenantPath('memory');
 const DB_PATH = join(DB_DIR, 'quality.db');
 
 export type ReviewOutcome = 'approve' | 'annotate' | 'revise' | 'redo';

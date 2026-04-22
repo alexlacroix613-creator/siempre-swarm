@@ -20,11 +20,12 @@ import Database from 'better-sqlite3';
 import { existsSync, mkdirSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import { tenantPath } from '../tenant/resolver.js';
 
 // ─── Config ───────────────────────────────────
 
 const PORT = parseInt(process.env.CIO_PORT || '8100');
-const DB_DIR = join(homedir(), '.siempre-swarm');
+const DB_DIR = tenantPath('memory');
 const DB_PATH = join(DB_DIR, 'cio.db');
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '';
 const OPUS_MODEL = 'anthropic/claude-opus-4';

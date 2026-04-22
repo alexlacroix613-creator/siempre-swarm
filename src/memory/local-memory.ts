@@ -2,7 +2,7 @@
  * Local Memory Backend — SQLite + FTS5 keyword search.
  *
  * Zero cost, unlimited usage, works offline.
- * Stores everything on Alex's machine at ~/.siempre-swarm/memory.db
+ * Stores under the active tenant's memory dir (see src/tenant/resolver.ts).
  *
  * Features:
  * - Namespaced memory (same containerTag pattern as supermemory)
@@ -15,9 +15,9 @@
 import Database from 'better-sqlite3';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { homedir } from 'os';
+import { tenantPath } from '../tenant/resolver.js';
 
-const DB_DIR = join(homedir(), '.siempre-swarm');
+const DB_DIR = tenantPath('memory');
 const DB_PATH = join(DB_DIR, 'memory.db');
 
 export interface LocalMemory {

@@ -15,9 +15,9 @@
 
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
-import { homedir } from 'os';
+import { tenantPath } from '../tenant/resolver.js';
 
-const SESSION_DIR = join(homedir(), '.siempre-swarm', 'sessions');
+const SESSION_DIR = join(tenantPath('memory'), 'sessions');
 
 interface SessionRecord {
   sessionId: string;

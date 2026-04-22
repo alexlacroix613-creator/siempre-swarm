@@ -4,7 +4,9 @@
  * Zero cost, unlimited, works offline.
  */
 
+import { join } from 'path';
 import { LocalMemoryStore } from './memory/local-memory.js';
+import { tenantPath } from './tenant/resolver.js';
 
 const store = new LocalMemoryStore();
 
@@ -72,4 +74,4 @@ for (const [ns, s] of Object.entries(stats)) {
 }
 
 store.close();
-console.log(`\nDatabase: ~/.siempre-swarm/memory.db`);
+console.log(`\nDatabase: ${join(tenantPath('memory'), 'memory.db')}`);
