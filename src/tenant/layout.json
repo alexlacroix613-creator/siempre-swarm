@@ -1,0 +1,24 @@
+{
+  "_comment": "Tenant directory layout contract. SSOT for both Python (tools/tenant/resolver.py) and TypeScript (siempre-swarm/src/tenant/resolver.ts). Add a key here before any consumer can depend on it. Keys stay stable; values can change as the tree moves. The TS mirror is a copy of this file at siempre-swarm/src/tenant/layout.json — keep them identical (Day 3 adds a parity check).",
+  "_version": "1.0.0",
+  "directories": {
+    "root":        ".",
+    "brain":       "brain",
+    "swarm":       "swarm",
+    "reports":     "reports",
+    "import_co":   "import-co",
+    "onboarding":  "onboarding",
+    "sandbox":     "sandbox",
+    "memory":      "memory",
+    "credentials": "credentials",
+    "dossiers":    "swarm/data/sales-force/dossiers",
+    "pricing":     "brain/Pricing Files",
+    "finance":     "brain/finance",
+    "market_reports": "brain/market-reports"
+  },
+  "files": {
+    "context_file": "brain/.agents/product-brand-context.md",
+    "routing_file": "reports/ROUTING.md",
+    "env_file":     "credentials/.env"
+  }
+}
