@@ -1,0 +1,40 @@
+#!/bin/sh
+# Tenant layout parity guard.
+#
+# Runs `src/tenant/parity.test.ts` whenever a commit touches the tenant
+# resolver layer. The test asserts the TS copy of layout.json is byte-equal
+# to the Python SSOT at `~/CLAUDE BRAIN/tools/tenant/layout.json`. Drift
+# between the two would silently break every callsite that resolves a
+# tenant path — catch it at commit time instead of at runtime.
+#
+# Enabled once per clone with `scripts/hooks/install.sh`.
+#
+# POSIX sh — stays portable across the stock macOS bash 3.2 that the
+# MacBook + Optimus ship with.
+
+set -eu
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Only run the parity check when something tenant-related is staged.
+# Any other commit is let through untouched.
+if ! git diff --cached --name-only --diff-filter=ACMR \
+     | grep -q '^src/tenant/'; then
+  exit 0
+fi
+
+echo "[pre-commit] tenant layer touched — running parity.test.ts…"
+
+if ! command -v npx >/dev/null 2>&1; then
+  echo "[pre-commit] npx not on PATH; cannot run parity check — aborting." >&2
+  exit 1
+fi
+
+cd "$REPO_ROOT"
+if ! npx tsx src/tenant/parity.test.ts; then
+  echo "" >&2
+  echo "[pre-commit] layout.json drift detected between TS and Python SSOT." >&2
+  echo "[pre-commit] Fix: sync ~/CLAUDE\\ BRAIN/tools/tenant/layout.json and" >&2
+  echo "             src/tenant/layout.json so their bytes match, then retry." >&2
+  exit 1
+fi
